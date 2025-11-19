@@ -13,8 +13,9 @@ const protectedRoutes = ["/dashboard", "/profile"];
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const currentUser = await getCurrentUser();
+  const isAuthenticated = currentUser.success === true && currentUser.data;
 
-  if (currentUser && authRoutes.includes(pathname)) {
+  if (isAuthenticated && authRoutes.includes(pathname)) {
     const redirect = request.nextUrl.searchParams.get("redirect");
     if (redirect) {
       return NextResponse.redirect(new URL(redirect, request.url));
@@ -23,7 +24,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  if (!currentUser && protectedRoutes.includes(pathname)) {
+  if (!isAuthenticated && protectedRoutes.includes(pathname)) {
     const loginUrl = new URL("/auth/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);

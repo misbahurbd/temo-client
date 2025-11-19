@@ -5,6 +5,25 @@ import {
   setServerCookie,
 } from "./server-cookie";
 
+interface ApiSuccessResponse<T = unknown> {
+  success: true;
+  message: string;
+  data: T;
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+interface ApiErrorResponse {
+  success: false;
+  message: string;
+}
+
+export type ApiResponse<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse;
+
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,

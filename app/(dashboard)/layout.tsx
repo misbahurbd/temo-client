@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/shared/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { CreateTeamModel } from "@/features/teams/models/create-team-model";
+import { CreateTeamModal } from "@/features/teams/modals/create-team-modal";
+import { UpdateTeamModal } from "@/features/teams/modals/update-team-modal";
 import { cookies } from "next/headers";
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
@@ -13,7 +14,8 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
       <main className="p-2 flex-1">{children}</main>
 
       {/* All models */}
-      <CreateTeamModel />
+      <CreateTeamModal />
+      <UpdateTeamModal />
     </SidebarProvider>
   );
 };

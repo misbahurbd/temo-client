@@ -27,21 +27,27 @@ import {
 import { toast } from "sonner";
 import { usePathname, useRouter } from "next/navigation";
 import { logout } from "@/features/auth/actions/logout.action";
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { User } from "@/features/auth/types/user.type";
+import { getCurrentUser } from "@/features/auth/actions/current-user.action";
 
-export function UserNav({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function UserNav() {
   const { isMobile } = useSidebar();
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    startTransition(async () => {
+      const response = await getCurrentUser();
+      if (response.success) {
+        setUser(response.data);
+      } else {
+        toast.error(response.message || "An error occurred");
+      }
+    });
+  }, [startTransition]);
 
   const onLogout = async () => {
     startTransition(async () => {
@@ -67,14 +73,25 @@ export function UserNav({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">
-                  {user.name.charAt(0) + user.name.charAt(1)}
+                  {user && (
+                    <>
+                      <AvatarImage
+                        src={user?.photo}
+                        alt={user?.firstName + user?.lastName}
+                      />
+                      <AvatarFallback className="rounded-lg">
+                        {user?.firstName.charAt(0) + user?.lastName.charAt(0)}
+                      </AvatarFallback>
+                    </>
+                  )}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-medium">
+                  {user?.firstName} {user?.lastName}
+                </span>
+                <span className="truncate text-xs">{user?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -88,14 +105,23 @@ export function UserNav({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">
-                    {user.name.charAt(0) + user.name.charAt(1)}
-                  </AvatarFallback>
+                  {user && (
+                    <>
+                      <AvatarImage
+                        src={user?.photo}
+                        alt={user?.firstName + user?.lastName}
+                      />
+                      <AvatarFallback className="rounded-lg">
+                        {user?.firstName.charAt(0) + user?.lastName.charAt(0)}
+                      </AvatarFallback>
+                    </>
+                  )}
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">
+                    {user?.firstName} {user?.lastName}
+                  </span>
+                  <span className="truncate text-xs">{user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>

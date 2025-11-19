@@ -4,7 +4,7 @@ import { FormInput, FormTextarea } from "@/components/shared/form-fields";
 import { Button } from "@/components/ui/button";
 import { FieldError, FieldGroup } from "@/components/ui/field";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import z from "zod";
 import {
@@ -13,12 +13,14 @@ import {
   PlusIcon,
   TrashIcon,
 } from "lucide-react";
-import { createTeam } from "../../actions/create-team.action";
 import { toast } from "sonner";
-import { useCreateTeamModel } from "../../stores/use-create-team-model";
+import { useUpdateTeamModel } from "../../stores/use-update-team-model";
+import { fetchTeamById } from "../../actions/fetch-team-by-id.action";
+import { updateTeamById } from "../../actions/update-team-by-id.action";
 import { useRouter } from "next/navigation";
 
 const memberSchema = z.object({
+  id: z.string().optional(),
   name: z.string().min(1, { message: "Name is required" }),
   role: z.string().min(1, { message: "Role is required" }),
   capacity: z
@@ -36,12 +38,13 @@ const formSchema = z.object({
   serverError: z.string().optional(),
 });
 
-export type CreateTeamFormData = z.infer<typeof formSchema>;
+export type UpdateTeamFormData = z.infer<typeof formSchema>;
 
-export const CreateTeamForm = () => {
+export const UpdateTeamForm = () => {
   const [showMemberForm, setShowMemberForm] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
-  const { setIsOpen } = useCreateTeamModel();
+  const [isPendingUpdate, startTransitionUpdate] = useTransition();
+  const { setIsOpen, teamId } = useUpdateTeamModel();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,6 +59,7 @@ export const CreateTeamForm = () => {
   const memberForm = useForm<z.infer<typeof memberSchema>>({
     resolver: zodResolver(memberSchema),
     defaultValues: {
+      id: undefined,
       name: "",
       role: "",
       capacity: "",
@@ -68,13 +72,16 @@ export const CreateTeamForm = () => {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    startTransition(async () => {
-      const response = await createTeam(data);
+    if (!teamId) {
+      toast.error("Team ID is required");
+      return;
+    }
 
-      console.log("response", response);
+    startTransition(async () => {
+      const response = await updateTeamById(teamId, data);
 
       if (response.success) {
-        toast.success(response.message || "Team created successfully");
+        toast.success(response.message || "Team updated successfully");
         form.reset();
         form.clearErrors();
         setShowMemberForm(false);
@@ -88,6 +95,33 @@ export const CreateTeamForm = () => {
       }
     });
   };
+
+  useEffect(() => {
+    if (teamId) {
+      startTransitionUpdate(async () => {
+        const response = await fetchTeamById(teamId);
+        if (response.success) {
+          form.reset(response.data);
+        } else {
+          toast.error(response.message || "An error occurred");
+          form.setError("serverError", {
+            message: response.message,
+          });
+        }
+      });
+    }
+  }, [teamId, startTransitionUpdate, form]);
+
+  if (isPendingUpdate) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <LoaderCircleIcon className="size-4 animate-spin mr-2" />
+        <span className="text-sm text-muted-foreground">
+          Loading team data...
+        </span>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -223,7 +257,7 @@ export const CreateTeamForm = () => {
             <LoaderCircleIcon className="size-4 animate-spin" />
           ) : (
             <span className="flex items-center gap-2">
-              <span>Create Team</span>
+              <span>Update Team</span>
               <ArrowRightIcon className="size-4" />
             </span>
           )}

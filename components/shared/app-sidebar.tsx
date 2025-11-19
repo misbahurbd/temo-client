@@ -9,29 +9,52 @@ import {
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSkeleton,
+  SidebarMenuSub,
 } from "../ui/sidebar";
 import Image from "next/image";
 import {
   ActivityIcon,
+  ChevronDownIcon,
   ClockIcon,
   FolderIcon,
   HomeIcon,
-  Plus,
+  PlusIcon,
   SettingsIcon,
   UsersIcon,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { UserNav } from "./user-nav";
+import { useEffect, useState, useTransition } from "react";
+import { Project } from "@/features/projects/types/project.type";
+import { fetchProjectsList } from "@/features/projects/actions/fetch-projects-list";
+import { toast } from "sonner";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
+import { Button } from "../ui/button";
 
 export const AppSidebar = () => {
   const pathname = usePathname();
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: "https://github.com/shadcn.png",
-  };
+  const [projectsList, setProjectsList] = useState<Project[]>([]);
+  const [limit, setLimit] = useState<number>(10);
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    startTransition(async () => {
+      const response = await fetchProjectsList({ page: 1, limit });
+      if (response.success) {
+        setProjectsList(response.data);
+      } else {
+        toast.error(response.message || "An error occurred");
+      }
+    });
+  }, [limit]);
 
   const navItems = [
     {
@@ -43,6 +66,11 @@ export const AppSidebar = () => {
       label: "Projects",
       href: "/projects",
       icon: FolderIcon,
+      children: projectsList.map((project) => ({
+        id: project.id,
+        label: project.name,
+        href: `/projects/${project.id}`,
+      })),
     },
     {
       label: "Teams",
@@ -98,27 +126,115 @@ export const AppSidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    tooltip={item.label}
-                    className="cursor-pointer"
-                    asChild
-                    isActive={pathname === item.href}
-                  >
-                    <Link href={item.href}>
-                      <item.icon className="size-4" />
-                      <span className="truncate">{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navItems.map((item) => {
+                if (item.children) {
+                  return (
+                    <Collapsible
+                      key={item.href}
+                      defaultOpen
+                      className="group/collapsible"
+                    >
+                      <div className="flex items-center gap-2">
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            tooltip={item.label}
+                            className="cursor-pointer"
+                            isActive={
+                              pathname === item.href ||
+                              pathname.startsWith(item.href)
+                            }
+                          >
+                            <item.icon className="size-4" />
+                            <span className="truncate">{item.label}</span>
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="cursor-pointer"
+                        >
+                          <PlusIcon className="size-4" />
+                          <span className="sr-only">Add Project</span>
+                        </Button>
+                      </div>
+
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {isPending && (
+                            <>
+                              {Array.from({ length: 4 }).map((_, index) => (
+                                <SidebarMenuSkeleton key={index} />
+                              ))}
+                            </>
+                          )}
+
+                          {projectsList.length > 0 && (
+                            <>
+                              {item.children.map((child) => (
+                                <SidebarMenuItem key={child.href}>
+                                  <SidebarMenuButton
+                                    tooltip={child.label}
+                                    className="cursor-pointer"
+                                    asChild
+                                  >
+                                    <Link href={child.href}>
+                                      <span className="truncate">
+                                        {child.label}
+                                      </span>
+                                    </Link>
+                                  </SidebarMenuButton>
+                                </SidebarMenuItem>
+                              ))}
+                              <SidebarMenuItem>
+                                <SidebarMenuButton
+                                  tooltip="View All Projects"
+                                  className="cursor-pointer"
+                                  asChild
+                                >
+                                  <Link href="/projects">
+                                    <span className="truncate">View All</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                            </>
+                          )}
+
+                          {!isPending && projectsList.length === 0 && (
+                            <SidebarMenuItem>
+                              <SidebarMenuButton
+                                tooltip="No projects found"
+                                className="cursor-pointer"
+                              ></SidebarMenuButton>
+                            </SidebarMenuItem>
+                          )}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                }
+
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      tooltip={item.label}
+                      className="cursor-pointer"
+                      asChild
+                      isActive={pathname === item.href}
+                    >
+                      <Link href={item.href}>
+                        <item.icon className="size-4" />
+                        <span className="truncate">{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <UserNav user={user} />
+        <UserNav />
       </SidebarFooter>
     </Sidebar>
   );

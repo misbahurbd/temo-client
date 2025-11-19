@@ -6,11 +6,11 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useTeamModel } from "../stores/use-team-model";
+import { useCreateTeamModel } from "../stores/use-create-team-model";
 import { CreateTeamForm } from "../components/form/create-team-form";
 
-export const CreateTeamModel = () => {
-  const { isOpen, setIsOpen } = useTeamModel();
+export const CreateTeamModal = () => {
+  const { isOpen, setIsOpen } = useCreateTeamModel();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen} modal={true}>

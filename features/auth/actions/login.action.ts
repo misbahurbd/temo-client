@@ -1,14 +1,18 @@
 "use server";
 
-import { api } from "@/lib/axios";
+import { api, ApiResponse } from "@/lib/axios";
 import { AxiosError } from "axios";
 
-export const login = async (email: string, password: string) => {
+export const login = async (
+  email: string,
+  password: string
+): Promise<ApiResponse<void>> => {
   try {
     const response = await api.post("/auth/login", { email, password });
+
     return {
       success: true,
-      message: response.data.message,
+      ...response.data,
     };
   } catch (errorResponse) {
     const error = errorResponse as AxiosError;

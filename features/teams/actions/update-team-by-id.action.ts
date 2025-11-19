@@ -2,19 +2,27 @@
 
 import { api, ApiResponse } from "@/lib/axios";
 import { AxiosError } from "axios";
-import { CreateTeamFormData } from "../components/form/create-team-form";
+import { UpdateTeamFormData } from "../components/form/update-team-form";
 import { Team } from "../types/team.type";
 
-export const createTeam = async (
-  team: CreateTeamFormData
+export const updateTeamById = async (
+  teamId: string,
+  team: UpdateTeamFormData
 ): Promise<ApiResponse<Team>> => {
+  if (!teamId) {
+    return {
+      success: false,
+      message: "Team ID is required",
+    };
+  }
+
   try {
-    const response = await api.post("/teams", team);
+    const response = await api.put(`/teams/${teamId}`, team);
 
     return {
       success: true,
       ...response.data,
-    } as ApiResponse<Team>;
+    };
   } catch (errorResponse) {
     const error = errorResponse as AxiosError;
 

@@ -5,7 +5,7 @@ interface TeamModelState {
   setIsOpen: (open: boolean) => void;
 }
 
-export const useTeamModel = create<TeamModelState>()((set) => ({
+export const useCreateTeamModel = create<TeamModelState>()((set) => ({
   isOpen: false,
   setIsOpen: (open) => set({ isOpen: open }),
 }));
