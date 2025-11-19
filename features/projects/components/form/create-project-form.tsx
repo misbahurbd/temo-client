@@ -21,6 +21,11 @@ import { createProject } from "../../actions/create-project.action";
 import { useCreateProjectModel } from "../../stores/use-create-project-model";
 import { useRouter } from "next/navigation";
 import { ArrowRightIcon, LoaderCircleIcon } from "lucide-react";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -32,11 +37,10 @@ const formSchema = z.object({
 export type CreateProjectFormData = z.infer<typeof formSchema>;
 
 export const CreateProjectForm = () => {
-  const [teamList, setTeamlist] = useState<TeamSelectList[]>([]);
-  const [isPending, startTransition] = useTransition();
   const [isSubmitting, startSubmitting] = useTransition();
-  const { setIsOpen, triggerRefresh } = useCreateProjectModel();
+  const { setIsOpen } = useCreateProjectModel();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,6 +52,14 @@ export const CreateProjectForm = () => {
     },
   });
 
+  const { data: teamListData, isPending } = useQuery({
+    queryKey: ["team-select-list"],
+    queryFn: () => fetchTeamSelectList(),
+    placeholderData: keepPreviousData,
+  });
+
+  const teamList = teamListData?.success ? teamListData.data : [];
+
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     console.log(data);
     startSubmitting(async () => {
@@ -57,24 +69,13 @@ export const CreateProjectForm = () => {
         form.reset();
         form.clearErrors();
         router.refresh();
-        triggerRefresh(); // Trigger sidebar refresh
+        queryClient.invalidateQueries({ queryKey: ["projects"] });
         setIsOpen(false);
       } else {
         toast.error(response.message || "An error occurred");
       }
     });
   };
-
-  useEffect(() => {
-    startTransition(async () => {
-      const response = await fetchTeamSelectList();
-      if (response.success) {
-        setTeamlist(response.data);
-      } else {
-        toast.error(response.message || "An error occurred");
-      }
-    });
-  }, []);
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>

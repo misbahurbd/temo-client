@@ -5,8 +5,6 @@ interface ProjectModelState {
   setIsOpen: (open: boolean) => void;
   projectId: string | null;
   setProjectId: (projectId: string | null) => void;
-  refreshTrigger: number;
-  triggerRefresh: () => void;
 }
 
 export const useUpdateProjectModel = create<ProjectModelState>()((set) => ({
@@ -14,7 +12,4 @@ export const useUpdateProjectModel = create<ProjectModelState>()((set) => ({
   setIsOpen: (open) => set({ isOpen: open }),
   projectId: null,
   setProjectId: (projectId) => set({ projectId }),
-  refreshTrigger: 0,
-  triggerRefresh: () =>
-    set((state) => ({ refreshTrigger: state.refreshTrigger + 1 })),
 }));

@@ -37,23 +37,19 @@ import {
 } from "../ui/collapsible";
 import { Button } from "../ui/button";
 import { useCreateProjectModel } from "@/features/projects/stores/use-create-project-model";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export const AppSidebar = () => {
   const pathname = usePathname();
-  const [projectsList, setProjectsList] = useState<Project[]>([]);
-  const [isPending, startTransition] = useTransition();
-  const { setIsOpen, refreshTrigger } = useCreateProjectModel();
+  const { setIsOpen } = useCreateProjectModel();
 
-  useEffect(() => {
-    startTransition(async () => {
-      const response = await fetchProjectsList({ page: 1, limit: 10 });
-      if (response.success) {
-        setProjectsList(response.data);
-      } else {
-        toast.error(response.message || "An error occurred");
-      }
-    });
-  }, [refreshTrigger]);
+  const { data: projects, isPending } = useQuery({
+    queryKey: ["projects"],
+    queryFn: () => fetchProjectsList({ page: 1, limit: 10 }),
+    placeholderData: keepPreviousData,
+  });
+
+  const projectsList = projects?.success ? projects.data : [];
 
   const navItems = [
     {
@@ -170,7 +166,7 @@ export const AppSidebar = () => {
                             </>
                           )}
 
-                          {projectsList.length > 0 && (
+                          {!isPending && projectsList.length > 0 && (
                             <>
                               {item.children.map((child) => (
                                 <SidebarMenuItem key={child.href}>

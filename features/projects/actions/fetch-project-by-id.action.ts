@@ -5,7 +5,7 @@ import { Project } from "../types/project.type";
 import { AxiosError } from "axios";
 
 export const fetchProjectById = async (
-  projectId: string
+  projectId: string | null
 ): Promise<ApiResponse<Project>> => {
   if (!projectId) {
     return {
