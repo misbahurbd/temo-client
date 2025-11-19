@@ -8,7 +8,7 @@ export const Logo = ({
   onlyIcon?: boolean;
 }) => {
   return (
-    <div>
+    <div className="flex items-center gap-2">
       <div
         className={cn(
           "flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground font-bold",
