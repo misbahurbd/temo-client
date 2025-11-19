@@ -14,22 +14,17 @@ import {
   SidebarMenuSkeleton,
   SidebarMenuSub,
 } from "../ui/sidebar";
-import Image from "next/image";
 import {
   ActivityIcon,
   ClockIcon,
   FolderIcon,
   HomeIcon,
   PlusIcon,
-  SettingsIcon,
   UsersIcon,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { UserNav } from "./user-nav";
-import { useEffect, useState, useTransition } from "react";
-import { Project } from "@/features/projects/types/project.type";
 import { fetchProjectsList } from "@/features/projects/actions/fetch-projects-list";
-import { toast } from "sonner";
 import {
   Collapsible,
   CollapsibleContent,
@@ -38,6 +33,7 @@ import {
 import { Button } from "../ui/button";
 import { useCreateProjectModel } from "@/features/projects/stores/use-create-project-model";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Logo } from "./logo";
 
 export const AppSidebar = () => {
   const pathname = usePathname();
@@ -82,11 +78,11 @@ export const AppSidebar = () => {
       href: "/activity",
       icon: ActivityIcon,
     },
-    {
-      label: "Settings",
-      href: "/settings",
-      icon: SettingsIcon,
-    },
+    // {
+    //   label: "Settings",
+    //   href: "/settings",
+    //   icon: SettingsIcon,
+    // },
   ];
 
   return (
@@ -101,12 +97,7 @@ export const AppSidebar = () => {
             >
               <Link href="/dashboard">
                 <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-none">
-                  <Image
-                    src="/images/logo.png"
-                    alt="logo"
-                    width={32}
-                    height={32}
-                  />
+                  <Logo onlyIcon />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">Temo</span>
@@ -173,6 +164,7 @@ export const AppSidebar = () => {
                                   <SidebarMenuButton
                                     tooltip={child.label}
                                     className="cursor-pointer"
+                                    isActive={pathname === child.href}
                                     asChild
                                   >
                                     <Link href={child.href}>

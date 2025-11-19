@@ -43,7 +43,7 @@ export interface TaskActivity {
   taskId: string;
   userId: string;
   assigneeToId: string;
-  assigneeFromId: string;
+  assigneeFromId?: string;
   createdAt: string;
   task: {
     id: string;

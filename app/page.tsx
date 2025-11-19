@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/features/auth/actions/current-user.action";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight, Check, Sparkles, Users, Target, Zap } from "lucide-react";
+import { Logo } from "@/components/shared/logo";
 
 const HomePage = async () => {
   const currentUser = await getCurrentUser();
@@ -14,12 +15,7 @@ const HomePage = async () => {
       <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground font-bold">
-              T
-            </div>
-            <span className="text-xl font-bold bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Temo
-            </span>
+            <Logo />
           </Link>
 
           <nav className="flex items-center gap-4">

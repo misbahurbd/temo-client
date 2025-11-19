@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { TASK_PRIORITY, TASK_STATUS } from "@/features/tasks/constant";
 import { TaskTableAction } from "@/features/tasks/components/task-table-action";
 import { TaskActionButtons } from "@/features/tasks/components/task-action-buttons";
+import { Circle } from "lucide-react";
 
 const DashboardProjectPage = async ({
   params,
@@ -55,7 +56,10 @@ const DashboardProjectPage = async ({
             {project.data.tasks?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-12">
-                  No tasks found
+                  <div className="flex flex-col items-center gap-3">
+                    <Circle className="h-12 w-12 text-muted-foreground/50" />
+                    <div className="text-muted-foreground">No tasks found</div>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (

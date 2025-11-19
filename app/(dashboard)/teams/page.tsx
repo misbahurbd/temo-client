@@ -20,6 +20,7 @@ import { fetchTeamList } from "@/features/teams/actions/fetch-team-list";
 import { CreateTeamButton } from "@/features/teams/components/create-team-button";
 import { TeamTableAction } from "@/features/teams/components/team-table-action";
 import { formatDate } from "@/lib/utils";
+import { Circle } from "lucide-react";
 
 export default async function TeamsPage({
   searchParams,
@@ -66,7 +67,10 @@ export default async function TeamsPage({
             {teams.data?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-12">
-                  No teams found
+                  <div className="flex flex-col items-center gap-3">
+                    <Circle className="h-12 w-12 text-muted-foreground/50" />
+                    <div className="text-muted-foreground">No teams found</div>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (

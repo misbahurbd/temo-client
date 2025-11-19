@@ -46,7 +46,7 @@ const DashboardPage = async () => {
   const recentReassignments = taskActivityList.slice(0, 5).map((activity) => ({
     id: activity.id,
     taskName: activity.task.name,
-    fromMember: activity.assigneeFrom?.name || "Unknown",
+    fromMember: activity.assigneeFrom?.name,
     toMember: activity.assigneeTo.name,
     reassignedAt: activity.createdAt,
   }));
@@ -91,17 +91,10 @@ const DashboardPage = async () => {
       {/* Team Summary */}
       <Card className="border-none shadow-none drop-shadow-none p-0 gap-4 mt-8">
         <CardHeader className="px-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                Team Summary
-              </CardTitle>
-              <CardDescription>
-                Current tasks vs. capacity for each team member
-              </CardDescription>
-            </div>
-          </div>
+          <CardTitle className="px-0">Team Summary</CardTitle>
+          <CardDescription>
+            Current tasks vs. capacity for each team member
+          </CardDescription>
         </CardHeader>
         <CardContent className="px-0">
           <div className="border rounded-lg">

@@ -22,3 +22,8 @@ export interface ProjectWithMembers {
   name: string;
   members: ProjectMember[];
 }
+
+export interface ProjectSelectList {
+  id: string;
+  name: string;
+}

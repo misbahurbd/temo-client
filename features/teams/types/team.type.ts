@@ -24,3 +24,8 @@ export type MemberTask = {
   capacity: number;
   tasksCount: number;
 };
+
+export type MemberSelectList = {
+  id: string;
+  name: string;
+};

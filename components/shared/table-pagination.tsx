@@ -47,6 +47,7 @@ export const TablePagination = ({
             variant={page === 1 ? "ghost" : "outline"}
             disabled={page === 1}
             onClick={() => handlePageChange(page - 1)}
+            className="cursor-pointer"
           >
             <ChevronLeftIcon />
           </Button>
@@ -65,6 +66,7 @@ export const TablePagination = ({
               variant={page === pageNumber ? "ghost" : "outline"}
               disabled={page === pageNumber}
               onClick={() => handlePageChange(pageNumber)}
+              className="cursor-pointer"
             >
               {pageNumber}
             </Button>
@@ -83,6 +85,7 @@ export const TablePagination = ({
             variant={page === totalPage ? "ghost" : "outline"}
             disabled={page === totalPage}
             onClick={() => handlePageChange(page + 1)}
+            className="cursor-pointer"
           >
             <ChevronRightIcon />
           </Button>

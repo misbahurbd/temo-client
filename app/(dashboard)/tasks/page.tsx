@@ -1,5 +1,6 @@
 import { DashboardHeader } from "@/components/shared/dashboard-header";
 import { SearchBox } from "@/components/shared/search-box";
+import { SelectFilter } from "@/components/shared/select-filter";
 import { TablePagination } from "@/components/shared/table-pagination";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,11 +12,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { fetchProjectSelectList } from "@/features/projects/actions/fetch-project-select-list.action";
 import { fetchTasksList } from "@/features/tasks/actions/fetch-tasks-list.action";
 import { CreateTaskButton } from "@/features/tasks/components/create-task-button";
 import { TaskTableAction } from "@/features/tasks/components/task-table-action";
 import { TASK_PRIORITY, TASK_STATUS } from "@/features/tasks/constant";
+import { fetchMemberSelectList } from "@/features/teams/actions/fetch-member-select-list.action";
 import { formatDate } from "@/lib/utils";
+import { Circle } from "lucide-react";
 
 export interface TaskQueryParams {
   search?: string;
@@ -36,6 +40,22 @@ const TasksPage = async ({ searchParams }: TasksPageProps) => {
   const query = await searchParams;
   const tasks = await fetchTasksList(query);
 
+  const memberSelectList = await fetchMemberSelectList();
+  const projectSelectList = await fetchProjectSelectList();
+
+  const memberSelectListData = memberSelectList.success
+    ? memberSelectList.data.map((member) => ({
+        label: member.name,
+        value: member.id,
+      }))
+    : [];
+  const projectSelectListData = projectSelectList.success
+    ? projectSelectList.data.map((project) => ({
+        label: project.name,
+        value: project.id,
+      }))
+    : [];
+
   if (!tasks.success) {
     return <div>{tasks.message}</div>;
   }
@@ -46,7 +66,21 @@ const TasksPage = async ({ searchParams }: TasksPageProps) => {
 
       <div className="flex items-center gap-4 justify-between">
         <SearchBox />
-        <CreateTaskButton />
+        <div className="flex items-center gap-2">
+          <SelectFilter
+            options={[{ label: "All", value: "all" }, ...memberSelectListData]}
+            queryKey="assigneeId"
+            label="Assignee"
+            placeholder="Select Assignee"
+          />
+          <SelectFilter
+            options={[{ label: "All", value: "all" }, ...projectSelectListData]}
+            queryKey="projectId"
+            label="Project"
+            placeholder="Select Project"
+          />
+          <CreateTaskButton />
+        </div>
       </div>
 
       <div className="border rounded-lg">
@@ -67,7 +101,10 @@ const TasksPage = async ({ searchParams }: TasksPageProps) => {
             {tasks.data?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-12">
-                  No tasks found
+                  <div className="flex flex-col items-center gap-3">
+                    <Circle className="h-12 w-12 text-muted-foreground/50" />
+                    <div className="text-muted-foreground">No tasks found</div>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
