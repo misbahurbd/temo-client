@@ -1,5 +1,4 @@
 import { DashboardHeader } from "@/components/shared/dashboard-header";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,87 +15,42 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FolderKanban, CheckSquare, Users, RefreshCw, ArrowRight } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { FolderKanban, CheckSquare, Users } from "lucide-react";
+import { fetchMemberTask } from "@/features/teams/actions/fetch-member-task.action";
+import { fetchTaskActivity } from "@/features/tasks/actions/fetch-task-activity.action";
+import { format } from "date-fns";
+import { fetchTaskAndProjectCount } from "@/features/tasks/actions/fetch-task-and-project-count.action";
 
-// Dummy data - Replace with API calls later
-const DUMMY_STATS = {
-  totalProjects: 12,
-  totalTasks: 48,
-};
+const DashboardPage = async () => {
+  const taskAndProjectCount = await fetchTaskAndProjectCount();
+  const taskAndProjectCountData = taskAndProjectCount.success
+    ? taskAndProjectCount.data
+    : {
+        taskCount: 0,
+        projectCount: 0,
+      };
 
-const DUMMY_TEAM_MEMBERS = [
-  {
-    id: "1",
-    name: "John Doe",
-    currentTasks: 8,
-    capacity: 10,
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    currentTasks: 12,
-    capacity: 10,
-  },
-  {
-    id: "3",
-    name: "Mike Johnson",
-    currentTasks: 6,
-    capacity: 10,
-  },
-  {
-    id: "4",
-    name: "Sarah Williams",
-    currentTasks: 11,
-    capacity: 10,
-  },
-  {
-    id: "5",
-    name: "David Brown",
-    currentTasks: 9,
-    capacity: 10,
-  },
-];
+  const memberTask = await fetchMemberTask();
+  const memberTaskList = memberTask.success ? memberTask.data : [];
 
-const DUMMY_RECENT_REASSIGNMENTS = [
-  {
-    id: "1",
-    taskName: "Implement user authentication",
-    fromMember: "Jane Smith",
-    toMember: "Mike Johnson",
-    reassignedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-  },
-  {
-    id: "2",
-    taskName: "Design landing page",
-    fromMember: "Sarah Williams",
-    toMember: "David Brown",
-    reassignedAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
-  },
-  {
-    id: "3",
-    taskName: "Setup database schema",
-    fromMember: "John Doe",
-    toMember: "Jane Smith",
-    reassignedAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
-  },
-  {
-    id: "4",
-    taskName: "Write API documentation",
-    fromMember: "Mike Johnson",
-    toMember: "John Doe",
-    reassignedAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
-  },
-  {
-    id: "5",
-    taskName: "Fix bug in payment module",
-    fromMember: "David Brown",
-    toMember: "Sarah Williams",
-    reassignedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 24 hours ago
-  },
-];
+  const teamMemberList = memberTaskList.map((member) => ({
+    id: member.id,
+    name: member.name,
+    currentTasks: member.tasksCount,
+    capacity: member.capacity,
+  }));
 
-const DashboardPage = () => {
+  const taskActivity = await fetchTaskActivity();
+  const taskActivityList = taskActivity.success ? taskActivity.data : [];
+
+  const recentReassignments = taskActivityList.slice(0, 5).map((activity) => ({
+    id: activity.id,
+    taskName: activity.task.name,
+    fromMember: activity.assigneeFrom?.name || "Unknown",
+    toMember: activity.assigneeTo.name,
+    reassignedAt: activity.createdAt,
+  }));
+
   return (
     <div className="space-y-6">
       <DashboardHeader title="Dashboard" />
@@ -112,7 +66,9 @@ const DashboardPage = () => {
             <CardDescription>Active projects in your workspace</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{DUMMY_STATS.totalProjects}</div>
+            <div className="text-3xl font-bold">
+              {taskAndProjectCountData.projectCount}
+            </div>
           </CardContent>
         </Card>
 
@@ -125,14 +81,16 @@ const DashboardPage = () => {
             <CardDescription>All tasks across all projects</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{DUMMY_STATS.totalTasks}</div>
+            <div className="text-3xl font-bold">
+              {taskAndProjectCountData.taskCount}
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Team Summary */}
-      <Card>
-        <CardHeader>
+      <Card className="border-none shadow-none drop-shadow-none p-0 gap-4 mt-8">
+        <CardHeader className="px-0">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
@@ -143,13 +101,9 @@ const DashboardPage = () => {
                 Current tasks vs. capacity for each team member
               </CardDescription>
             </div>
-            <Button>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Reassign Tasks
-            </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0">
           <div className="border rounded-lg">
             <Table>
               <TableHeader>
@@ -162,7 +116,7 @@ const DashboardPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {DUMMY_TEAM_MEMBERS.map((member) => {
+                {teamMemberList.map((member) => {
                   const isOverloaded = member.currentTasks > member.capacity;
                   const utilization = Math.round(
                     (member.currentTasks / member.capacity) * 100
@@ -173,7 +127,9 @@ const DashboardPage = () => {
                       key={member.id}
                       className={isOverloaded ? "bg-destructive/10" : ""}
                     >
-                      <TableCell className="font-medium">{member.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {member.name}
+                      </TableCell>
                       <TableCell>
                         <span
                           className={
@@ -202,12 +158,16 @@ const DashboardPage = () => {
                                   ? "bg-yellow-500"
                                   : "bg-primary"
                               }`}
-                              style={{ width: `${Math.min(utilization, 100)}%` }}
+                              style={{
+                                width: `${Math.min(utilization, 100)}%`,
+                              }}
                             />
                           </div>
                           <span
                             className={`text-sm ${
-                              isOverloaded ? "text-destructive font-semibold" : ""
+                              isOverloaded
+                                ? "text-destructive font-semibold"
+                                : ""
                             }`}
                           >
                             {utilization}%
@@ -224,46 +184,64 @@ const DashboardPage = () => {
       </Card>
 
       {/* Recent Reassignments */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Reassignments</CardTitle>
+      <Card className="border-none shadow-none drop-shadow-none p-0 gap-4 mt-8">
+        <CardHeader className="px-0">
+          <CardTitle className="px-0">Recent Reassignments</CardTitle>
           <CardDescription>Last 5 moved tasks</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0">
           <div className="border rounded-lg">
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Task</TableHead>
-                  <TableHead>From</TableHead>
-                  <TableHead>To</TableHead>
-                  <TableHead>Reassigned At</TableHead>
-                </TableRow>
-              </TableHeader>
               <TableBody>
-                {DUMMY_RECENT_REASSIGNMENTS.length === 0 ? (
+                {recentReassignments.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-12">
+                    <TableCell className="text-center py-12">
                       No recent reassignments
                     </TableCell>
                   </TableRow>
                 ) : (
-                  DUMMY_RECENT_REASSIGNMENTS.map((reassignment) => (
+                  recentReassignments.map((reassignment) => (
                     <TableRow key={reassignment.id}>
-                      <TableCell className="font-medium">
-                        {reassignment.taskName}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{reassignment.fromMember}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                          <Badge variant="default">{reassignment.toMember}</Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {formatDate(reassignment.reassignedAt.toISOString())}
+                      <TableCell className="text-sm text-muted-foreground">
+                        {reassignment.fromMember ? (
+                          <>
+                            <span className="text-foreground font-medium">
+                              {format(
+                                new Date(reassignment.reassignedAt),
+                                "hh:mm a"
+                              )}
+                            </span>{" "}
+                            -{" "}
+                            <span className="text-foreground font-medium">
+                              {reassignment.taskName}
+                            </span>{" "}
+                            reassigned from{" "}
+                            <span className="text-foreground font-medium">
+                              {reassignment.fromMember}
+                            </span>{" "}
+                            to{" "}
+                            <span className="text-foreground font-medium">
+                              {reassignment.toMember}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-foreground font-medium">
+                              {format(
+                                new Date(reassignment.reassignedAt),
+                                "hh:mm a"
+                              )}
+                            </span>{" "}
+                            -{" "}
+                            <span className="text-foreground font-medium">
+                              {reassignment.taskName}
+                            </span>{" "}
+                            assigned to{" "}
+                            <span className="text-foreground font-medium">
+                              {reassignment.toMember}
+                            </span>
+                          </>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))

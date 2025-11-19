@@ -37,3 +37,24 @@ export interface Task {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface TaskActivity {
+  id: string;
+  taskId: string;
+  userId: string;
+  assigneeToId: string;
+  assigneeFromId: string;
+  createdAt: string;
+  task: {
+    id: string;
+    name: string;
+  };
+  assigneeFrom: {
+    id: string;
+    name: string;
+  } | null;
+  assigneeTo: {
+    id: string;
+    name: string;
+  };
+}

@@ -17,3 +17,10 @@ export type TeamMember = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type MemberTask = {
+  id: string;
+  name: string;
+  capacity: number;
+  tasksCount: number;
+};

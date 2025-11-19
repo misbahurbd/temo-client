@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { fetchTasksList } from "@/features/tasks/actions/fetch-tasks-list.action";
 import { CreateTaskButton } from "@/features/tasks/components/create-task-button";
+import { TaskTableAction } from "@/features/tasks/components/task-table-action";
 import { TASK_PRIORITY, TASK_STATUS } from "@/features/tasks/constant";
 import { formatDate } from "@/lib/utils";
 
@@ -139,7 +140,7 @@ const TasksPage = async ({ searchParams }: TasksPageProps) => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {/* <TaskTableAction id={task.id} /> */}
+                    <TaskTableAction id={task.id} />
                   </TableCell>
                 </TableRow>
               ))
