@@ -159,7 +159,7 @@ export const AppSidebar = () => {
                       </div>
 
                       <CollapsibleContent>
-                        <SidebarMenuSub>
+                        <SidebarMenuSub className="max-h-[200px] overflow-y-auto">
                           {isPending && (
                             <>
                               {Array.from({ length: 4 }).map((_, index) => (

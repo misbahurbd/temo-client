@@ -23,7 +23,7 @@ export const TeamTableAction = ({ id }: { id: string }) => {
           <MoreHorizontalIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="w-36" align="end" side="bottom">
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={() => {

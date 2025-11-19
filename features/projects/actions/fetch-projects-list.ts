@@ -3,6 +3,8 @@
 import { api, ApiResponse } from "@/lib/axios";
 import { AxiosError } from "axios";
 import { Project } from "../types/project.type";
+import { Team } from "@/features/teams/types/team.type";
+import { Task } from "@/features/tasks/types/task.type";
 
 interface FetchProjectsListParams {
   page: number;
@@ -12,7 +14,7 @@ interface FetchProjectsListParams {
 
 export const fetchProjectsList = async (
   query?: FetchProjectsListParams
-): Promise<ApiResponse<Project[]>> => {
+): Promise<ApiResponse<(Project & { team: Team; tasks: Task[] })[]>> => {
   try {
     const params: Record<string, unknown> = {
       page: query ? Number(query.page) : 1,
