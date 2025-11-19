@@ -8,9 +8,18 @@ import {
 } from "@/components/ui/dialog";
 import { useCreateTaskModel } from "../stores/use-create-task-modal";
 import { CreateTaskForm } from "../components/form/create-task-form";
+import { useEffect } from "react";
 
 export const CreateTaskModal = () => {
-  const { isOpen, setIsOpen } = useCreateTaskModel();
+  const { isOpen, setIsOpen, setProjectId, projectId } = useCreateTaskModel();
+
+  // useEffect(() => {
+  //   return () => {
+  //     if (projectId && isOpen) {
+  //       setProjectId(null);
+  //     }
+  //   };
+  // }, [isOpen, setProjectId, projectId]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen} modal={true}>

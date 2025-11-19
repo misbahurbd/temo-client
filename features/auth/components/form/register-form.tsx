@@ -12,6 +12,7 @@ import {
 import {
   AlertCircleIcon,
   ArrowRightIcon,
+  Loader2Icon,
   LockIcon,
   MailIcon,
   UserIcon,
@@ -24,6 +25,7 @@ import { register } from "../../actions/register.action";
 import { toast } from "sonner";
 import { FormInput } from "@/components/shared/form-fields";
 import { FieldGroup } from "@/components/ui/field";
+import { useTransition } from "react";
 
 const registerSchema = z
   .object({
@@ -47,6 +49,7 @@ export const RegisterForm = () => {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
   const router = useRouter();
+  const [isSubmitting, startSubmitting] = useTransition();
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -60,25 +63,27 @@ export const RegisterForm = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
-    const response = await register(
-      data.firstName,
-      data.lastName,
-      data.email,
-      data.password
-    );
-    if (response.success) {
-      toast.success(response.message || "Register successful");
-      if (redirect) {
-        router.push(redirect);
+    startSubmitting(async () => {
+      const response = await register(
+        data.firstName,
+        data.lastName,
+        data.email,
+        data.password
+      );
+      if (response.success) {
+        toast.success(response.message || "Register successful");
+        if (redirect) {
+          router.push(redirect);
+        } else {
+          router.push("/");
+        }
       } else {
-        router.push("/");
+        toast.error(response.message || "An error occurred");
+        form.setError("root.serverError", {
+          message: response.message,
+        });
       }
-    } else {
-      toast.error(response.message || "An error occurred");
-      form.setError("root.serverError", {
-        message: response.message,
-      });
-    }
+    });
   };
 
   return (
@@ -221,11 +226,19 @@ export const RegisterForm = () => {
           </Alert>
         )}
 
-        <Button type="submit" className="w-full mt-4 cursor-pointer">
-          <span className="flex items-center gap-2">
-            <span>Register</span>
-            <ArrowRightIcon />
-          </span>
+        <Button
+          type="submit"
+          className="w-full mt-4 cursor-pointer"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <Loader2Icon className="size-4 animate-spin" />
+          ) : (
+            <span className="flex items-center gap-2">
+              <span>Register</span>
+              <ArrowRightIcon />
+            </span>
+          )}
         </Button>
       </form>
       <p className="text-sm text-center text-muted-foreground mt-4">

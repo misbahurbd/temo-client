@@ -202,7 +202,11 @@ export const AppSidebar = () => {
                               <SidebarMenuButton
                                 tooltip="No projects found"
                                 className="cursor-pointer"
-                              ></SidebarMenuButton>
+                              >
+                                <span className="truncate text-muted-foreground">
+                                  No projects found
+                                </span>
+                              </SidebarMenuButton>
                             </SidebarMenuItem>
                           )}
                         </SidebarMenuSub>

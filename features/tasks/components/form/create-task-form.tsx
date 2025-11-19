@@ -81,7 +81,7 @@ export const CreateTaskForm = () => {
   const [member, setMember] = useState<ProjectMember | null>(null);
   const [showMemberCapacityModal, setShowMemberCapacityModal] =
     useState<boolean>(false);
-  const { setIsOpen } = useCreateTaskModel();
+  const { setIsOpen, projectId } = useCreateTaskModel();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -157,6 +157,14 @@ export const CreateTaskForm = () => {
       });
     }
   }, [selectedProjectId, projectList]);
+
+  useEffect(() => {
+    if (projectId) {
+      startTransition(() => {
+        form.setValue("projectId", projectId);
+      });
+    }
+  }, [projectId, form]);
 
   const handleAutoAssign = () => {
     if (!selectedProjectId || assigneeList.length === 0) {

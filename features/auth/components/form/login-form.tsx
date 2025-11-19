@@ -12,6 +12,7 @@ import {
 import {
   AlertCircleIcon,
   ArrowRightIcon,
+  Loader2Icon,
   LockIcon,
   MailIcon,
 } from "lucide-react";
@@ -22,6 +23,7 @@ import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FormCheckbox, FormInput } from "@/components/shared/form-fields";
+import { useTransition } from "react";
 
 const loginSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
@@ -35,6 +37,7 @@ const loginSchema = z.object({
 export const LoginForm = () => {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
+  const [isSubmitting, startSubmitting] = useTransition();
   const router = useRouter();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -47,20 +50,23 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    const response = await login(data.email, data.password);
-    if (response.success) {
-      toast.success(response.message || "Login successful");
-      if (redirect) {
-        router.push(redirect);
+    startSubmitting(async () => {
+      const response = await login(data.email, data.password);
+
+      if (response.success) {
+        toast.success(response.message || "Login successful");
+        if (redirect) {
+          router.push(redirect);
+        } else {
+          router.push("/");
+        }
       } else {
-        router.push("/");
+        toast.error(response.message || "An error occurred");
+        form.setError("root.serverError", {
+          message: response.message,
+        });
       }
-    } else {
-      toast.error(response.message || "An error occurred");
-      form.setError("root.serverError", {
-        message: response.message,
-      });
-    }
+    });
   };
 
   return (
@@ -69,6 +75,13 @@ export const LoginForm = () => {
       <p className="text-sm text-center text-muted-foreground">
         Please enter your details to Login
       </p>
+
+      {/* DEMO CREDENTIALS */}
+      <div className="text-sm text-center text-muted-foreground bg-primary/10 p-2 rounded-md">
+        <p>Email: johndeo@gmail.com</p>
+        <p>Password: StrongPassword123!</p>
+      </div>
+
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup className="gap-5">
           <FormInput
@@ -115,7 +128,7 @@ export const LoginForm = () => {
             )}
           />
 
-          <div className="flex items-center justify-between">
+          <div className="items-center justify-between hidden">
             <FormCheckbox
               name="remember"
               label="Remember me"
@@ -145,11 +158,19 @@ export const LoginForm = () => {
           </Alert>
         )}
 
-        <Button type="submit" className="w-full mt-4 cursor-pointer">
-          <span className="flex items-center gap-2">
-            <span>Login</span>
-            <ArrowRightIcon />
-          </span>
+        <Button
+          type="submit"
+          className="w-full mt-4 cursor-pointer"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <Loader2Icon className="size-4 animate-spin" />
+          ) : (
+            <span className="flex items-center gap-2">
+              <span>Login</span>
+              <ArrowRightIcon />
+            </span>
+          )}
         </Button>
       </form>
       <p className="text-sm text-center text-muted-foreground mt-4">
