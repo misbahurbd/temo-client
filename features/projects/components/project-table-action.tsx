@@ -25,7 +25,7 @@ export const ProjectTableAction = ({ id }: { id: string }) => {
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href={`/projects/${id}`}>
             <EyeIcon className="size-4" />
-            View
+            View Tasks
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
