@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LoginForm } from "@/features/auth/components/form/login-form";
 
 const LoginPage = () => {
@@ -7,7 +8,9 @@ const LoginPage = () => {
       <div className="w-full lg:w-1/2 px-20 py-24 flex flex-col gap-8">
         <h2 className="text-2xl font-bold text-center">LOGO</h2>
 
-        <LoginForm />
+        <Suspense fallback={<div>Loading...</div>}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
