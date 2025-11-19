@@ -1,14 +1,9 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+
 import {
   InputGroup,
   InputGroupAddon,
@@ -27,6 +22,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter, useSearchParams } from "next/navigation";
 import { register } from "../../actions/register.action";
 import { toast } from "sonner";
+import { FormInput } from "@/components/shared/form-fields";
+import { FieldGroup } from "@/components/ui/field";
 
 const registerSchema = z
   .object({
@@ -85,7 +82,7 @@ export const RegisterForm = () => {
   };
 
   return (
-    <div className="space-y-4 p-8 border rounded-sm bg-white">
+    <div className="space-y-4 p-8 border rounded-sm bg-white w-full max-w-md mx-auto">
       <h3 className="text-2xl font-bold text-center mb-2">Register</h3>
       <p className="text-sm text-center text-muted-foreground">
         Please enter your details to Register
@@ -93,134 +90,117 @@ export const RegisterForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup className="gap-5">
           <div className="flex gap-5">
-            <Controller
-              control={form.control}
+            <FormInput
               name="firstName"
-              render={({ field, fieldState }) => (
-                <Field className="gap-2" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="firstName">First Name</FieldLabel>
-                  <InputGroup>
-                    <InputGroupInput
-                      {...field}
-                      id="firstName"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Enter your first name"
-                      autoComplete="off"
-                      type="text"
-                    />
-                    <InputGroupAddon align="inline-start">
-                      <UserIcon />
-                    </InputGroupAddon>
-                  </InputGroup>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
+              label="First Name"
+              required={true}
+              control={form.control}
+              placeholder="Enter your first name"
+              renderField={({ field, fieldState }) => (
+                <InputGroup>
+                  <InputGroupInput
+                    {...field}
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Enter your first name"
+                    autoComplete="off"
+                    type="text"
+                  />
+                  <InputGroupAddon align="inline-start">
+                    <UserIcon />
+                  </InputGroupAddon>
+                </InputGroup>
               )}
             />
-            <Controller
-              control={form.control}
+            <FormInput
               name="lastName"
-              render={({ field, fieldState }) => (
-                <Field className="gap-2" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
-                  <InputGroup>
-                    <InputGroupInput
-                      {...field}
-                      id="lastName"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Enter your last name"
-                      autoComplete="off"
-                      type="text"
-                    />
-                    <InputGroupAddon align="inline-start">
-                      <UserIcon />
-                    </InputGroupAddon>
-                  </InputGroup>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
+              label="Last Name"
+              required={true}
+              control={form.control}
+              placeholder="Enter your last name"
+              renderField={({ field, fieldState }) => (
+                <InputGroup>
+                  <InputGroupInput
+                    {...field}
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Enter your last name"
+                    autoComplete="off"
+                    type="text"
+                  />
+                  <InputGroupAddon align="inline-start">
+                    <UserIcon />
+                  </InputGroupAddon>
+                </InputGroup>
               )}
             />
           </div>
-          <Controller
-            control={form.control}
+
+          <FormInput
             name="email"
-            render={({ field, fieldState }) => (
-              <Field className="gap-2" data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <InputGroup>
-                  <InputGroupInput
-                    {...field}
-                    id="email"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Enter your email"
-                    autoComplete="off"
-                    type="email"
-                  />
-                  <InputGroupAddon align="inline-start">
-                    <MailIcon />
-                  </InputGroupAddon>
-                </InputGroup>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
+            label="Email"
+            required={true}
+            control={form.control}
+            placeholder="Enter your email"
+            renderField={({ field, fieldState }) => (
+              <InputGroup>
+                <InputGroupInput
+                  {...field}
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Enter your email"
+                  autoComplete="off"
+                  type="email"
+                />
+                <InputGroupAddon align="inline-start">
+                  <MailIcon />
+                </InputGroupAddon>
+              </InputGroup>
             )}
           />
 
-          <Controller
-            control={form.control}
+          <FormInput
             name="password"
-            render={({ field, fieldState }) => (
-              <Field className="gap-2" data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <InputGroup>
-                  <InputGroupInput
-                    {...field}
-                    id="password"
-                    type="password"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Enter your password"
-                    autoComplete="off"
-                  />
-                  <InputGroupAddon align="inline-start">
-                    <LockIcon />
-                  </InputGroupAddon>
-                </InputGroup>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
+            label="Password"
+            required={true}
+            control={form.control}
+            placeholder="Enter your password"
+            renderField={({ field, fieldState }) => (
+              <InputGroup>
+                <InputGroupInput
+                  {...field}
+                  id={field.name}
+                  type="password"
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Enter your password"
+                  autoComplete="off"
+                />
+                <InputGroupAddon align="inline-start">
+                  <LockIcon />
+                </InputGroupAddon>
+              </InputGroup>
             )}
           />
 
-          <Controller
-            control={form.control}
+          <FormInput
             name="confirmPassword"
-            render={({ field, fieldState }) => (
-              <Field className="gap-2" data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="confirmPassword">
-                  Confirm Password
-                </FieldLabel>
-                <InputGroup>
-                  <InputGroupInput
-                    {...field}
-                    id="confirmPassword"
-                    type="password"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Enter your confirm password"
-                    autoComplete="off"
-                  />
-                  <InputGroupAddon align="inline-start">
-                    <LockIcon />
-                  </InputGroupAddon>
-                </InputGroup>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
+            label="Confirm Password"
+            required={true}
+            control={form.control}
+            renderField={({ field, fieldState }) => (
+              <InputGroup>
+                <InputGroupInput
+                  {...field}
+                  id={field.name}
+                  type="password"
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Confirm your password"
+                  autoComplete="off"
+                />
+                <InputGroupAddon align="inline-start">
+                  <LockIcon />
+                </InputGroupAddon>
+              </InputGroup>
             )}
           />
         </FieldGroup>
@@ -250,7 +230,14 @@ export const RegisterForm = () => {
       </form>
       <p className="text-sm text-center text-muted-foreground mt-4">
         Already have an account?{" "}
-        <Link href="/auth/login" className="text-primary">
+        <Link
+          href={
+            redirect
+              ? `/auth/login?redirect=${encodeURIComponent(redirect)}`
+              : "/auth/login"
+          }
+          className="text-primary"
+        >
           Login
         </Link>
       </p>

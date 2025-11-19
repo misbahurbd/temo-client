@@ -27,12 +27,14 @@ import { login } from "../../actions/login.action";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FormCheckbox, FormInput } from "@/components/shared/form-fields";
 
 const loginSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters long" }),
+  remember: z.boolean().optional(),
   serverError: z.string().optional(),
 });
 
@@ -45,6 +47,7 @@ export const LoginForm = () => {
     defaultValues: {
       email: "",
       password: "",
+      remember: false,
       serverError: undefined,
     },
   });
@@ -67,70 +70,65 @@ export const LoginForm = () => {
   };
 
   return (
-    <div className="space-y-4 p-8 border rounded-sm bg-white">
+    <div className="space-y-4 p-8 border rounded-sm bg-white w-full max-w-md mx-auto">
       <h3 className="text-2xl font-bold text-center mb-2">Login</h3>
       <p className="text-sm text-center text-muted-foreground">
         Please enter your details to Login
       </p>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup className="gap-5">
-          <Controller
-            control={form.control}
+          <FormInput
             name="email"
-            render={({ field, fieldState }) => (
-              <Field className="gap-2" data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <InputGroup>
-                  <InputGroupInput
-                    {...field}
-                    id="email"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Enter your email"
-                    autoComplete="off"
-                    type="email"
-                  />
-                  <InputGroupAddon align="inline-start">
-                    <MailIcon />
-                  </InputGroupAddon>
-                </InputGroup>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <Controller
+            label="Email"
             control={form.control}
-            name="password"
-            render={({ field, fieldState }) => (
-              <Field className="gap-2" data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <InputGroup>
-                  <InputGroupInput
-                    {...field}
-                    id="password"
-                    type="password"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Enter your password"
-                    autoComplete="off"
-                  />
-                  <InputGroupAddon align="inline-start">
-                    <LockIcon />
-                  </InputGroupAddon>
-                </InputGroup>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
+            placeholder="Enter your email"
+            renderField={({ field, fieldState }) => (
+              <InputGroup>
+                <InputGroupInput
+                  {...field}
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Enter your email"
+                  autoComplete="off"
+                  type="email"
+                />
+                <InputGroupAddon align="inline-start">
+                  <MailIcon />
+                </InputGroupAddon>
+              </InputGroup>
             )}
           />
+
+          <FormInput
+            name="password"
+            label="Password"
+            control={form.control}
+            placeholder="Enter your password"
+            renderField={({ field, fieldState }) => (
+              <InputGroup>
+                <InputGroupInput
+                  {...field}
+                  id={field.name}
+                  type="password"
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Enter your password"
+                  autoComplete="off"
+                />
+                <InputGroupAddon align="inline-start">
+                  <LockIcon />
+                </InputGroupAddon>
+              </InputGroup>
+            )}
+          />
+
           <div className="flex items-center justify-between">
-            <Field className="gap-2 w-max" orientation="horizontal">
-              <Checkbox id="remember-me" />
-              <FieldLabel className="mb-0" htmlFor="remember-me">
-                Remember me
-              </FieldLabel>
-            </Field>
+            <FormCheckbox
+              name="remember"
+              label="Remember me"
+              control={form.control}
+              className="w-max"
+            />
+
             <Link href="/forgot-password" className="text-sm text-primary">
               Forgot password?
             </Link>
@@ -162,7 +160,14 @@ export const LoginForm = () => {
       </form>
       <p className="text-sm text-center text-muted-foreground mt-4">
         Don&apos;t have an account?{" "}
-        <Link href="/auth/register" className="text-primary">
+        <Link
+          href={
+            redirect
+              ? `/auth/register?redirect=${encodeURIComponent(redirect)}`
+              : "/auth/register"
+          }
+          className="text-primary"
+        >
           Register
         </Link>
       </p>
