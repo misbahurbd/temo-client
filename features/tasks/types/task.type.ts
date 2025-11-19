@@ -10,15 +10,30 @@ export enum TaskPriority {
   HIGH = "HIGH",
 }
 
+interface Project {
+  id: string;
+  name: string;
+}
+
+interface ProjectMember {
+  id: string;
+  name: string;
+  capacity: number;
+  tasksCount: number;
+}
+
 export interface Task {
   id: string;
-  title: string;
+  name: string;
   description: string;
   status: TaskStatus;
   priority: TaskPriority;
   isActive: boolean;
   projectId: string;
-  createdById: string;
+  dueDate: string;
+  assigneeId: string;
+  project: Project;
+  assignee: ProjectMember;
   createdAt: string;
   updatedAt: string;
 }
