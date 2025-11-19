@@ -5,6 +5,8 @@ import { UpdateTeamModal } from "@/features/teams/modals/update-team-modal";
 import { UpdateProjectModal } from "@/features/projects/modals/update-project-modal";
 import { cookies } from "next/headers";
 import { CreateProjectModal } from "@/features/projects/modals/create-project-modal";
+import { CreateTaskModal } from "@/features/tasks/modals/create-task-modal";
+import { UpdateTaskModal } from "@/features/tasks/modals/update-task-modal";
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   const cookieStore = await cookies();
@@ -20,6 +22,8 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
       <UpdateTeamModal />
       <CreateProjectModal />
       <UpdateProjectModal />
+      <CreateTaskModal />
+      <UpdateTaskModal />
     </SidebarProvider>
   );
 };

@@ -10,12 +10,10 @@ import {
   FormTextarea,
 } from "@/components/shared/form-fields";
 import { Button } from "@/components/ui/button";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { fetchTeamSelectList } from "@/features/teams/actions/fetch-team-select-list.action";
 import { toast } from "sonner";
 import { SelectItem } from "@/components/ui/select";
-import { createProject } from "../../actions/create-project.action";
-import { useCreateProjectModel } from "../../stores/use-create-project-model";
 import { useRouter } from "next/navigation";
 import { ArrowRightIcon, LoaderCircleIcon } from "lucide-react";
 import {
@@ -23,6 +21,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useUpdateTaskModel } from "../../stores/use-update-task-modal";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -31,23 +30,13 @@ const formSchema = z.object({
   serverError: z.string().optional(),
 });
 
-export type CreateProjectFormData = z.infer<typeof formSchema>;
+export type UpdateTaskFormData = z.infer<typeof formSchema>;
 
-export const CreateProjectForm = () => {
+export const UpdateTaskForm = () => {
   const [isSubmitting, startSubmitting] = useTransition();
-  const { setIsOpen } = useCreateProjectModel();
+  const { taskId } = useUpdateTaskModel();
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      teamId: "",
-      serverError: undefined,
-    },
-  });
 
   const { data: teamListData, isPending } = useQuery({
     queryKey: ["team-select-list"],
@@ -57,22 +46,51 @@ export const CreateProjectForm = () => {
 
   const teamList = teamListData?.success ? teamListData.data : [];
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const form = useForm<UpdateTaskFormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      teamId: "",
+      serverError: undefined,
+    },
+  });
+
+  const onSubmit = (data: UpdateTaskFormData) => {
     console.log(data);
     startSubmitting(async () => {
-      const response = await createProject(data);
-      if (response.success) {
-        toast.success(response.message || "Project created successfully");
-        form.reset();
-        form.clearErrors();
-        router.refresh();
-        queryClient.invalidateQueries({ queryKey: ["projects"] });
-        setIsOpen(false);
-      } else {
-        toast.error(response.message || "An error occurred");
+      if (!taskId) {
+        toast.error("Task ID is required");
+        return;
       }
+
+      console.log(data);
     });
   };
+
+  useEffect(() => {
+    if (taskId) {
+      // startTransitionUpdate(async () => {
+      //   const response = await fetchTaskById(taskId);
+      //   if (response.success) {
+      //     form.reset(response.data);
+      //   } else {
+      //     toast.error(response.message || "An error occurred");
+      //   }
+      // });
+    }
+  }, [taskId, form]);
+
+  if (isPending) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <LoaderCircleIcon className="size-4 animate-spin mr-2" />
+        <span className="text-sm text-muted-foreground">
+          Loading task data...
+        </span>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -81,19 +99,19 @@ export const CreateProjectForm = () => {
           name="name"
           label="Name"
           control={form.control}
-          placeholder="Enter project name"
+          placeholder="Enter task name"
           required={true}
         />
         <FormTextarea
           name="description"
           label="Description"
           control={form.control}
-          placeholder="Enter project description"
+          placeholder="Enter task description"
           required={true}
         />
         <FormSelect
           name="teamId"
-          label="Team"
+          label="Project"
           control={form.control}
           placeholder="Select a team"
           required={true}
@@ -117,7 +135,7 @@ export const CreateProjectForm = () => {
             <LoaderCircleIcon className="w-4 h-4 animate-spin" />
           ) : (
             <span className="flex items-center gap-2">
-              <span>Create Project</span>
+              <span>Update Project</span>
               <ArrowRightIcon className="size-4" />
             </span>
           )}

@@ -12,7 +12,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -22,6 +22,10 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
+import { Button } from "../ui/button";
+import { ChevronDownIcon } from "lucide-react";
 
 type FormControlProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -34,6 +38,7 @@ type FormControlProps<
   placeholder?: string;
   className?: string;
   required?: boolean;
+  disabled?: boolean;
   control: ControllerProps<TFieldValues, TName, TTransformedValues>["control"];
   renderField?: FormRenderFieldProps<TFieldValues, TName, TTransformedValues>;
 };
@@ -154,7 +159,13 @@ function FormBase<
 export const FormInput: FormControlFunc = (props) => {
   return (
     <FormBase {...props}>
-      {(field) => <Input {...field} placeholder={props.placeholder} />}
+      {(field) => (
+        <Input
+          {...field}
+          placeholder={props.placeholder}
+          disabled={props.disabled}
+        />
+      )}
     </FormBase>
   );
 };
@@ -162,7 +173,13 @@ export const FormInput: FormControlFunc = (props) => {
 export const FormTextarea: FormControlFunc = (props) => {
   return (
     <FormBase {...props}>
-      {(field) => <Textarea {...field} placeholder={props.placeholder} />}
+      {(field) => (
+        <Textarea
+          {...field}
+          placeholder={props.placeholder}
+          disabled={props.disabled}
+        />
+      )}
     </FormBase>
   );
 };
@@ -174,11 +191,12 @@ export const FormSelect: FormControlFunc<{ children: ReactNode }> = ({
   return (
     <FormBase {...props}>
       {({ onChange, onBlur, ...field }) => (
-        <Select {...field} onValueChange={onChange}>
+        <Select {...field} onValueChange={onChange} disabled={props.disabled}>
           <SelectTrigger
             aria-invalid={field["aria-invalid"]}
             id={field.id}
             onBlur={onBlur}
+            disabled={props.disabled}
           >
             <SelectValue
               placeholder={props.placeholder || "Select an option"}
@@ -195,7 +213,49 @@ export const FormCheckbox: FormControlFunc = (props) => {
   return (
     <FormBase {...props} horizontal controlFirst>
       {({ onChange, value, ...field }) => (
-        <Checkbox {...field} checked={value} onCheckedChange={onChange} />
+        <Checkbox
+          {...field}
+          checked={value}
+          onCheckedChange={onChange}
+          disabled={props.disabled}
+        />
+      )}
+    </FormBase>
+  );
+};
+
+export const FormDatePicker: FormControlFunc = (props) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <FormBase {...props}>
+      {(field) => (
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              id={field.name}
+              disabled={props.disabled}
+              className="w-48 justify-between font-normal"
+            >
+              {field.value
+                ? field.value.toLocaleDateString()
+                : props.placeholder || "Select a date"}
+              <ChevronDownIcon className="size-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              mode="single"
+              selected={field.value}
+              onSelect={(date: Date | undefined) => {
+                field.onChange(date);
+                setIsOpen(false);
+              }}
+              className="w-full"
+            />
+          </PopoverContent>
+        </Popover>
       )}
     </FormBase>
   );

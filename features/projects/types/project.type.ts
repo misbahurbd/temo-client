@@ -8,3 +8,17 @@ export interface Project {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ProjectMember {
+  id: string;
+  name: string;
+  role: string;
+  capacity: number;
+  tasksCount: number;
+}
+
+export interface ProjectWithMembers {
+  id: string;
+  name: string;
+  members: ProjectMember[];
+}
