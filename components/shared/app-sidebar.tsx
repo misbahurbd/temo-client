@@ -9,7 +9,6 @@ import {
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSkeleton,
@@ -18,7 +17,6 @@ import {
 import Image from "next/image";
 import {
   ActivityIcon,
-  ChevronDownIcon,
   ClockIcon,
   FolderIcon,
   HomeIcon,
@@ -38,23 +36,24 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Button } from "../ui/button";
+import { useCreateProjectModel } from "@/features/projects/stores/use-create-project-model";
 
 export const AppSidebar = () => {
   const pathname = usePathname();
   const [projectsList, setProjectsList] = useState<Project[]>([]);
-  const [limit, setLimit] = useState<number>(10);
   const [isPending, startTransition] = useTransition();
+  const { setIsOpen, refreshTrigger } = useCreateProjectModel();
 
   useEffect(() => {
     startTransition(async () => {
-      const response = await fetchProjectsList({ page: 1, limit });
+      const response = await fetchProjectsList({ page: 1, limit: 10 });
       if (response.success) {
         setProjectsList(response.data);
       } else {
         toast.error(response.message || "An error occurred");
       }
     });
-  }, [limit]);
+  }, [refreshTrigger]);
 
   const navItems = [
     {
@@ -95,7 +94,7 @@ export const AppSidebar = () => {
   ];
 
   return (
-    <Sidebar variant="floating" collapsible="icon" className="group">
+    <Sidebar variant="floating" collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -148,14 +147,17 @@ export const AppSidebar = () => {
                             <span className="truncate">{item.label}</span>
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          className="cursor-pointer"
-                        >
-                          <PlusIcon className="size-4" />
-                          <span className="sr-only">Add Project</span>
-                        </Button>
+                        {item.label === "Projects" && (
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            className="cursor-pointer group-data-[state=collapsed]:hidden"
+                            onClick={() => setIsOpen(true)}
+                          >
+                            <PlusIcon className="size-4" />
+                            <span className="sr-only">Add Project</span>
+                          </Button>
+                        )}
                       </div>
 
                       <CollapsibleContent>

@@ -1,17 +1,27 @@
-import { api, ApiResponse } from "@/lib/axios";
+"use server";
+
+import { ApiResponse, api } from "@/lib/axios";
 import { AxiosError } from "axios";
 
+export type TeamSelectList = {
+  id: string;
+  name: string;
+  membersCount: number;
+};
+
 export const fetchTeamSelectList = async (): Promise<
-  ApiResponse<{ id: string; name: string; membersCount: number }[]>
+  ApiResponse<TeamSelectList[]>
 > => {
   try {
     const response = await api.get("/teams/select-list");
+
     return {
-      success: true,
       ...response.data,
+      success: true,
     };
   } catch (errorResponse) {
     const error = errorResponse as AxiosError;
+
     return {
       success: false,
       message: error.message || "An error occurred",
