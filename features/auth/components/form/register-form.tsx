@@ -87,7 +87,7 @@ export const RegisterForm = () => {
   };
 
   return (
-    <div className="space-y-4 p-8 border rounded-sm bg-white w-full max-w-md mx-auto">
+    <div className="space-y-4 p-8 border rounded-sm bg-white w-full">
       <h3 className="text-2xl font-bold text-center mb-2">Register</h3>
       <p className="text-sm text-center text-muted-foreground">
         Please enter your details to Register

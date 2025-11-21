@@ -69,18 +69,18 @@ export const LoginForm = () => {
     });
   };
 
+  const handleLoginWithDemoCredentials = () => {
+    form.setValue("email", "johndeo@gmail.com");
+    form.setValue("password", "StrongPassword123!");
+    form.handleSubmit(onSubmit)();
+  };
+
   return (
-    <div className="space-y-4 p-8 border rounded-sm bg-white w-full max-w-md mx-auto">
+    <div className="space-y-4 p-8 border rounded-sm bg-white w-full">
       <h3 className="text-2xl font-bold text-center mb-2">Login</h3>
       <p className="text-sm text-center text-muted-foreground">
         Please enter your details to Login
       </p>
-
-      {/* DEMO CREDENTIALS */}
-      <div className="text-sm text-center text-muted-foreground bg-primary/10 p-2 rounded-md">
-        <p>Email: johndeo@gmail.com</p>
-        <p>Password: StrongPassword123!</p>
-      </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup className="gap-5">
@@ -158,20 +158,38 @@ export const LoginForm = () => {
           </Alert>
         )}
 
-        <Button
-          type="submit"
-          className="w-full mt-4 cursor-pointer"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <Loader2Icon className="size-4 animate-spin" />
-          ) : (
-            <span className="flex items-center gap-2">
-              <span>Login</span>
-              <ArrowRightIcon />
-            </span>
-          )}
-        </Button>
+        <div className="flex flex-col gap-2 mt-4">
+          <Button
+            type="submit"
+            className="w-full cursor-pointer"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <Loader2Icon className="size-4 animate-spin" />
+            ) : (
+              <span className="flex items-center gap-2">
+                <span>Login</span>
+                <ArrowRightIcon />
+              </span>
+            )}
+          </Button>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={handleLoginWithDemoCredentials}
+            className="w-full cursor-pointer"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <Loader2Icon className="size-4 animate-spin" />
+            ) : (
+              <span className="flex items-center gap-2">
+                <span>Login with Demo Credentials</span>
+                <ArrowRightIcon />
+              </span>
+            )}
+          </Button>
+        </div>
       </form>
       <p className="text-sm text-center text-muted-foreground mt-4">
         Don&apos;t have an account?{" "}
