@@ -2,20 +2,10 @@
 
 import { api, ApiResponse } from "@/lib/axios";
 import { AxiosError } from "axios";
-import { TaskDetail } from "../types/task.type";
 
-export const fetchTaskById = async (
-  taskId: string
-): Promise<ApiResponse<TaskDetail>> => {
-  if (!taskId) {
-    return {
-      success: false,
-      message: "Task ID is required",
-    };
-  }
-
+export const fetchOverloadedMemberCount = async (): Promise<ApiResponse<number>> => {
   try {
-    const response = await api.get(`/tasks/${taskId}`);
+    const response = await api.get("/tasks/overloaded-member-count");
     return {
       success: true,
       ...response.data,

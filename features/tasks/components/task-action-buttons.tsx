@@ -2,24 +2,39 @@
 
 import { Button } from "@/components/ui/button";
 
-import { LoaderCircleIcon, PlusIcon, SparklesIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useCreateTaskModel } from "../stores/use-create-task-modal";
 import { useTransition } from "react";
-import { reassignTasks } from "../actions/reassign-tasks.action";
+import { reassignProjectTasks } from "../actions/reassign-tasks.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { ReassignButton } from "@/components/shared/reassign-button";
 
-export const TaskActionButtons = ({ projectId }: { projectId: string }) => {
+export const TaskActionButtons = ({
+  projectId,
+  overloadedMemberCount,
+}: {
+  projectId: string;
+  overloadedMemberCount: number;
+}) => {
+  const queryClient = useQueryClient();
   const { setIsOpen, setProjectId } = useCreateTaskModel();
   const [isReassigning, startReassigning] = useTransition();
   const router = useRouter();
 
   const onReassignTasks = () => {
     startReassigning(async () => {
-      const response = await reassignTasks(projectId);
+      const response = await reassignProjectTasks(projectId);
       if (response.success) {
         toast.success(response.message || "Tasks reassigned successfully");
         router.refresh();
+        queryClient.invalidateQueries({
+          queryKey: ["overloaded-member-count"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["team-select-list"],
+        });
       } else {
         toast.error(response.message || "An error occurred");
       }
@@ -28,19 +43,12 @@ export const TaskActionButtons = ({ projectId }: { projectId: string }) => {
 
   return (
     <div className="flex items-center gap-3 ml-auto">
-      <Button
-        variant="outline"
-        className="rounded-full cursor-pointer "
+      <ReassignButton
         onClick={() => onReassignTasks()}
-        disabled={isReassigning}
-      >
-        {isReassigning ? (
-          <LoaderCircleIcon className="size-4 animate-spin" />
-        ) : (
-          <SparklesIcon className="size-4" />
-        )}
-        Reassign Tasks
-      </Button>
+        isLoading={isReassigning}
+        disabled={overloadedMemberCount === 0 || isReassigning}
+        taskCount={overloadedMemberCount || 0}
+      />
 
       <Button
         className="rounded-full cursor-pointer"

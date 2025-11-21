@@ -13,9 +13,9 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
+    <SidebarProvider className="gap-0" defaultOpen={defaultOpen}>
       <AppSidebar />
-      <main className="p-2 flex-1">{children}</main>
+      <main className="p-4 flex-1">{children}</main>
 
       {/* All models */}
       <CreateTeamModal />

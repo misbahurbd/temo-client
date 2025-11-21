@@ -6,7 +6,8 @@ import { AxiosError } from "axios";
 import { Task } from "@/features/tasks/types/task.type";
 
 export const fetchProjectWithTask = async (
-  projectId: string | null
+  projectId: string | null,
+  query?: { [key: string]: string | string[] | undefined }
 ): Promise<ApiResponse<Project & { tasks: Task[] }>> => {
   if (!projectId) {
     return {
@@ -16,7 +17,9 @@ export const fetchProjectWithTask = async (
   }
 
   try {
-    const response = await api.get(`/projects/${projectId}/tasks`);
+    const response = await api.get(`/projects/${projectId}/tasks`, {
+      params: query,
+    });
 
     return {
       success: true,

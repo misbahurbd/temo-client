@@ -15,11 +15,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FolderKanban, CheckSquare, Users } from "lucide-react";
+import { FolderKanban, CheckSquare } from "lucide-react";
 import { fetchMemberTask } from "@/features/teams/actions/fetch-member-task.action";
 import { fetchTaskActivity } from "@/features/tasks/actions/fetch-task-activity.action";
 import { format } from "date-fns";
 import { fetchTaskAndProjectCount } from "@/features/tasks/actions/fetch-task-and-project-count.action";
+import ReassignAllTask from "@/components/shared/reassign-all-task";
 
 const DashboardPage = async () => {
   const taskAndProjectCount = await fetchTaskAndProjectCount();
@@ -45,7 +46,7 @@ const DashboardPage = async () => {
 
   const recentReassignments = taskActivityList.slice(0, 5).map((activity) => ({
     id: activity.id,
-    taskName: activity.task.name,
+    taskName: activity.task?.name || 'Unnamed Task',
     fromMember: activity.assigneeFrom?.name,
     toMember: activity.assigneeTo.name,
     reassignedAt: activity.createdAt,
@@ -90,12 +91,15 @@ const DashboardPage = async () => {
 
       {/* Team Summary */}
       <Card className="border-none shadow-none drop-shadow-none p-0 gap-4 mt-8">
-        <CardHeader className="px-0">
-          <CardTitle className="px-0">Team Summary</CardTitle>
-          <CardDescription>
-            Current tasks vs. capacity for each team member
-          </CardDescription>
-        </CardHeader>
+        <div className="flex items-center justify-between">
+          <CardHeader className="px-0 w-full">
+            <CardTitle className="px-0">Team Summary</CardTitle>
+            <CardDescription>
+              Current tasks vs. capacity for each team member
+            </CardDescription>
+          </CardHeader>
+          <ReassignAllTask />
+        </div>
         <CardContent className="px-0">
           <div className="border rounded-lg">
             <Table>

@@ -7,7 +7,7 @@ import { UpdateTaskFormData } from "../components/form/update-task-form";
 
 export const updateTask = async (
   taskId: string,
-  data: Omit<UpdateTaskFormData, "serverError" | "projectId">
+  data: Partial<Omit<UpdateTaskFormData, "serverError" | "projectId">>
 ): Promise<ApiResponse<Task>> => {
   if (!taskId) {
     return {

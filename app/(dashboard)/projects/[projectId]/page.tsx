@@ -6,36 +6,59 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { TASK_PRIORITY, TASK_STATUS } from "@/features/tasks/constant";
 import { TaskTableAction } from "@/features/tasks/components/task-table-action";
 import { TaskActionButtons } from "@/features/tasks/components/task-action-buttons";
 import { Circle } from "lucide-react";
+import { TablePagination } from "@/components/shared/table-pagination";
+import Link from "next/link";
 
 const DashboardProjectPage = async ({
   params,
+  searchParams,
 }: {
   params: Promise<{ projectId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   const { projectId } = await params;
-  const project = await fetchProjectWithTask(projectId);
+  const query = await searchParams;
+  const project = await fetchProjectWithTask(projectId, query);
 
   if (!project.success) {
     return <div>{project.message}</div>;
   }
 
+  const memberCount = new Set(
+    project.data.tasks?.map((task) => task.assignee?.id)
+  );
+  const overloadedMemberCount = Array.from(memberCount).filter((member) => {
+    const memberTasks = project.data.tasks?.filter(
+      (task) => task.assignee?.id === member
+    );
+    return memberTasks?.some(
+      (task) => task.assignee?.tasksCount > task.assignee?.capacity
+    );
+  }).length;
+
   return (
     <div className="space-y-4">
-      <DashboardHeader title={project.data?.name || "Project"} />
+      <DashboardHeader
+        title={project.data?.name + " project tasks" || "Project tasks"}
+      />
 
       <div className="flex items-center gap-4 justify-between">
         <SearchBox />
-        <TaskActionButtons projectId={projectId} />
+        <TaskActionButtons
+          projectId={projectId}
+          overloadedMemberCount={overloadedMemberCount || 0}
+        />
       </div>
 
       <div className="border rounded-lg">
@@ -44,12 +67,16 @@ const DashboardProjectPage = async ({
             <TableRow>
               <TableHead>Date</TableHead>
               <TableHead>Title</TableHead>
-              <TableHead>Project</TableHead>
-              <TableHead>Assignee</TableHead>
+              <TableHead>
+                Assignee{" "}
+                <span className="text-xs text-muted-foreground">
+                  (Tasks/Capacity)
+                </span>
+              </TableHead>
               <TableHead>Due Date</TableHead>
-              <TableHead>Priority</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="text-center">Priority</TableHead>
+              <TableHead className="text-center">Status</TableHead>
+              <TableHead className="text-right w-[100px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -66,19 +93,33 @@ const DashboardProjectPage = async ({
               project.data.tasks?.map((task) => (
                 <TableRow key={task.id}>
                   <TableCell>{formatDate(task.createdAt)}</TableCell>
-                  <TableCell>{task.name}</TableCell>
-                  <TableCell>{task.project?.name}</TableCell>
+                  <TableCell>
+                    <Link
+                      href={`/tasks/${task.id}`}
+                      className="hover:underline font-medium hover:text-primary"
+                    >
+                      {task.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     {task.assignee ? (
                       <span className="text-sm ">
                         {task.assignee?.name}
                         <Badge
                           variant={
-                            task.assignee?.tasksCount >= task.assignee?.capacity
+                            task.assignee?.tasksCount > task.assignee?.capacity
                               ? "destructive"
                               : "default"
                           }
-                          className="text-[10px] px-1 py-0.5 ml-2"
+                          className={cn(
+                            "text-[10px] px-1 py-0.5 ml-2",
+                            task.assignee?.tasksCount > task.assignee?.capacity
+                              ? "bg-red-500 text-white"
+                              : task.assignee?.tasksCount ===
+                                task.assignee?.capacity
+                              ? "bg-yellow-500 text-white"
+                              : "bg-green-500 text-white"
+                          )}
                         >
                           ({task.assignee?.tasksCount}/{task.assignee?.capacity}
                           )
@@ -93,16 +134,16 @@ const DashboardProjectPage = async ({
 
                   <TableCell>{formatDate(task.dueDate)}</TableCell>
 
-                  <TableCell>
+                  <TableCell className="text-center">
                     <Badge
-                      variant={
+                      className={cn(
+                        "text-[10px] px-2 py-0.5",
                         task.priority === "LOW"
-                          ? "default"
+                          ? "bg-green-500 text-white"
                           : task.priority === "MEDIUM"
-                          ? "default"
-                          : "destructive"
-                      }
-                      className="text-[10px] px-2 py-0.5"
+                          ? "bg-yellow-500 text-white"
+                          : "bg-red-500 text-white"
+                      )}
                     >
                       {
                         TASK_PRIORITY.find(
@@ -112,7 +153,7 @@ const DashboardProjectPage = async ({
                       }
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <Badge
                       variant={
                         task.status === "PENDING"
@@ -131,13 +172,23 @@ const DashboardProjectPage = async ({
                       }
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right w-[100px]">
                     <TaskTableAction id={task.id} />
                   </TableCell>
                 </TableRow>
               ))
             )}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={8}>
+                <TablePagination
+                  page={project.meta?.page || 1}
+                  totalPage={project.meta?.totalPages || 0}
+                />
+              </TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
       </div>
     </div>

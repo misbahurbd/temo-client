@@ -67,8 +67,8 @@ const formSchema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
   status: z.enum(TaskStatus),
   priority: z.enum(TaskPriority),
-  dueDate: z.date().min(new Date(), { message: "Due date is required" }),
-  assigneeId: z.string().min(1, { message: "Assignee ID is required" }),
+  dueDate: z.date().optional(),
+  assigneeId: z.string().optional(),
   projectId: z.string().min(1, { message: "Project ID is required" }),
   serverError: z.string().optional(),
 });
@@ -249,9 +249,17 @@ export const CreateTaskForm = () => {
             name="dueDate"
             label="Due Date"
             control={form.control}
-            placeholder="Select a due date"
-            required={true}
+            placeholder="Select due date"
+            format="MMM d, yyyy"
             disabled={!selectedProjectId}
+            disabledDate={(date) => {
+              if (!date) return false;
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const compareDate = new Date(date);
+              compareDate.setHours(0, 0, 0, 0);
+              return compareDate < today;
+            }}
           />
           <div className="flex items-center gap-2 min-w-0 max-w-full">
             <Controller

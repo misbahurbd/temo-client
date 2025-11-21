@@ -10,6 +10,17 @@ export enum TaskPriority {
   HIGH = "HIGH",
 }
 
+export enum TaskActivityType {
+  TASK_CREATED = "TASK_CREATED",
+  TASK_UPDATED = "TASK_UPDATED",
+  TASK_STATUS_UPDATED = "TASK_STATUS_UPDATED",
+  TASK_PRIORITY_UPDATED = "TASK_PRIORITY_UPDATED",
+  TASK_DUE_DATE_UPDATED = "TASK_DUE_DATE_UPDATED",
+  TASK_ASSIGNED = "TASK_ASSIGNED",
+  TASK_UNASSIGNED = "TASK_UNASSIGNED",
+  TASK_REASSIGNED = "TASK_REASSIGNED",
+}
+
 interface Project {
   id: string;
   name: string;
@@ -42,13 +53,12 @@ export interface TaskActivity {
   id: string;
   taskId: string;
   userId: string;
-  assigneeToId: string;
-  assigneeFromId?: string;
+  fromValue: string | null;
+  toValue: string | null;
+  assigneeToId: string | null;
+  assigneeFromId: string | null;
+  activityType: TaskActivityType;
   createdAt: string;
-  task: {
-    id: string;
-    name: string;
-  };
   assigneeFrom: {
     id: string;
     name: string;
@@ -57,4 +67,37 @@ export interface TaskActivity {
     id: string;
     name: string;
   };
+  task?: {
+    id: string;
+    name: string;
+  };
+}
+
+
+export interface TaskDetail {
+  id: string;
+  name: "New task here";
+  description: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  dueDate: string;
+  assigneeId: string | null;
+  projectId: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  assignee?: {
+    id: string;
+    name: string;
+    capacity: number;
+    _count: {
+      tasks: number;
+    };
+    tasksCount: number;
+  };
+  project: {
+    id: string;
+    name: string;
+  };
+  activities: TaskActivity[];
 }

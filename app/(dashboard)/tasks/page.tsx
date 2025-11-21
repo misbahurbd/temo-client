@@ -20,6 +20,7 @@ import { TASK_PRIORITY, TASK_STATUS } from "@/features/tasks/constant";
 import { fetchMemberSelectList } from "@/features/teams/actions/fetch-member-select-list.action";
 import { formatDate } from "@/lib/utils";
 import { Circle } from "lucide-react";
+import Link from "next/link";
 
 export interface TaskQueryParams {
   search?: string;
@@ -111,7 +112,14 @@ const TasksPage = async ({ searchParams }: TasksPageProps) => {
               tasks.data?.map((task) => (
                 <TableRow key={task.id}>
                   <TableCell>{formatDate(task.createdAt)}</TableCell>
-                  <TableCell>{task.name}</TableCell>
+                  <TableCell>
+                    <Link
+                      href={`/tasks/${task.id}`}
+                      className="hover:underline font-medium hover:text-primary "
+                    >
+                      {task.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>{task.project?.name}</TableCell>
                   <TableCell>
                     {task.assignee ? (

@@ -19,7 +19,7 @@ export const TaskTableAction = ({ id }: { id: string }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="cursor-pointer">
           <MoreHorizontalIcon className="size-4" />
         </Button>
       </DropdownMenuTrigger>

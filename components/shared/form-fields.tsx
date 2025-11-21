@@ -26,6 +26,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Button } from "../ui/button";
 import { ChevronDownIcon } from "lucide-react";
+import { Matcher } from "react-day-picker";
+import { format } from "date-fns";
 
 type FormControlProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -224,7 +226,10 @@ export const FormCheckbox: FormControlFunc = (props) => {
   );
 };
 
-export const FormDatePicker: FormControlFunc = (props) => {
+export const FormDatePicker: FormControlFunc<{
+  disabledDate?: Matcher | Matcher[] | undefined;
+  format?: string;
+}> = (props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -236,11 +241,15 @@ export const FormDatePicker: FormControlFunc = (props) => {
               variant="outline"
               id={field.name}
               disabled={props.disabled}
-              className="w-48 justify-between font-normal"
+              className={cn(
+                "w-48 justify-between font-normal",
+                props.disabled && "cursor-not-allowed opacity-50",
+                !field.value && "text-muted-foreground"
+              )}
             >
               {field.value
-                ? field.value.toLocaleDateString()
-                : props.placeholder || "Select a date"}
+                ? format(field.value, props.format || "MMM d, yyyy")
+                : props.placeholder || "Select date"}
               <ChevronDownIcon className="size-4" />
             </Button>
           </PopoverTrigger>
@@ -252,6 +261,7 @@ export const FormDatePicker: FormControlFunc = (props) => {
                 field.onChange(date);
                 setIsOpen(false);
               }}
+              disabled={props.disabledDate || undefined}
               className="w-full"
             />
           </PopoverContent>
