@@ -34,6 +34,7 @@ import { cn, formatDate } from "@/lib/utils";
 import { TaskPriorityBadge } from "@/features/tasks/components/task-priority-badge";
 import { TaskStatusBadge } from "@/features/tasks/components/task-status-badge";
 import Link from "next/link";
+import { Metadata } from "next";
 
 function getInitials(name: string): string {
   return name
@@ -43,6 +44,11 @@ function getInitials(name: string): string {
     .toUpperCase()
     .slice(0, 2);
 }
+
+export const metadata: Metadata = {
+  title: "Activity - Temo",
+  description: "View the activity log of your tasks and projects",
+};
 
 export default async function ActivityPage({
   searchParams,

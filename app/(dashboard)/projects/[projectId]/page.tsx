@@ -19,6 +19,12 @@ import { TablePagination } from "@/components/shared/table-pagination";
 import Link from "next/link";
 import { TaskPriorityBadge } from "@/features/tasks/components/task-priority-badge";
 import { TaskStatusBadge } from "@/features/tasks/components/task-status-badge";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Project - Temo",
+  description: "View a project and its tasks.",
+};
 
 const DashboardProjectPage = async ({
   params,

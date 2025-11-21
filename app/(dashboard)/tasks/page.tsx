@@ -18,10 +18,10 @@ import { CreateTaskButton } from "@/features/tasks/components/create-task-button
 import { TaskPriorityBadge } from "@/features/tasks/components/task-priority-badge";
 import { TaskStatusBadge } from "@/features/tasks/components/task-status-badge";
 import { TaskTableAction } from "@/features/tasks/components/task-table-action";
-import { TASK_PRIORITY, TASK_STATUS } from "@/features/tasks/constant";
 import { fetchMemberSelectList } from "@/features/teams/actions/fetch-member-select-list.action";
 import { formatDate } from "@/lib/utils";
 import { Circle } from "lucide-react";
+import { Metadata } from "next";
 import Link from "next/link";
 
 export interface TaskQueryParams {
@@ -38,6 +38,11 @@ export interface TaskQueryParams {
 interface TasksPageProps {
   searchParams: Promise<TaskQueryParams>;
 }
+
+export const metadata: Metadata = {
+  title: "Tasks - Temo",
+  description: "View all your tasks and their details",
+};
 
 const TasksPage = async ({ searchParams }: TasksPageProps) => {
   const query = await searchParams;

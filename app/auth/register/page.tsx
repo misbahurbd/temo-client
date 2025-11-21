@@ -1,6 +1,12 @@
 import { Suspense } from "react";
 import { RegisterForm } from "@/features/auth/components/form/register-form";
 import { Logo } from "@/components/shared/logo";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Register",
+  description: "Register a new account",
+};
 
 const RegisterPage = () => {
   return (

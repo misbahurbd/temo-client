@@ -11,16 +11,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { fetchProjectsList } from "@/features/projects/actions/fetch-projects-list";
 import { CreateProjectButton } from "@/features/projects/components/create-project-button";
 import { ProjectTableAction } from "@/features/projects/components/project-table-action";
 import { formatDate } from "@/lib/utils";
 import { Circle } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Projects - Temo",
+  description: "View all your projects",
+};
 
 export default async function ProjectsPage({
   searchParams,

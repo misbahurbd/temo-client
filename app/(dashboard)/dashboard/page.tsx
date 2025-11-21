@@ -21,6 +21,12 @@ import { fetchTaskActivity } from "@/features/tasks/actions/fetch-task-activity.
 import { format } from "date-fns";
 import { fetchTaskAndProjectCount } from "@/features/tasks/actions/fetch-task-and-project-count.action";
 import ReassignAllTask from "@/components/shared/reassign-all-task";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard - Temo",
+  description: "View your dashboard and your tasks and projects",
+};
 
 const DashboardPage = async () => {
   const taskAndProjectCount = await fetchTaskAndProjectCount();

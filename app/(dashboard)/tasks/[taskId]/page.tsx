@@ -46,6 +46,7 @@ import {
 } from "@/features/tasks/types/task.type";
 import { TaskStatusBadge } from "@/features/tasks/components/task-status-badge";
 import { TaskPriorityBadge } from "@/features/tasks/components/task-priority-badge";
+import { Metadata } from "next";
 
 interface TaskDetailPageProps {
   params: Promise<{ taskId: string }>;
@@ -59,6 +60,11 @@ function getInitials(name: string): string {
     .toUpperCase()
     .slice(0, 2);
 }
+
+export const metadata: Metadata = {
+  title: "Task Details - Temo",
+  description: "View the details of a task and its activity history",
+};
 
 const TaskDetailPage = async ({ params }: TaskDetailPageProps) => {
   const { taskId } = await params;

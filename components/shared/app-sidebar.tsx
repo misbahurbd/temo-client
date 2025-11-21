@@ -95,7 +95,7 @@ export const AppSidebar = () => {
               asChild
               className="md:h-8 md:p-0 hover:bg-transparent"
             >
-              <Link href="/dashboard">
+              <Link href="/">
                 <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-none">
                   <Logo onlyIcon />
                 </div>

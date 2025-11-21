@@ -1,6 +1,12 @@
 import { Suspense } from "react";
 import { LoginForm } from "@/features/auth/components/form/login-form";
 import { Logo } from "@/components/shared/logo";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Login",
+  description: "Login to your account",
+};
 
 const LoginPage = () => {
   return (

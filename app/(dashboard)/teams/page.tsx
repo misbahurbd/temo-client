@@ -21,6 +21,12 @@ import { CreateTeamButton } from "@/features/teams/components/create-team-button
 import { TeamTableAction } from "@/features/teams/components/team-table-action";
 import { formatDate } from "@/lib/utils";
 import { Circle } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Teams - Temo",
+  description: "View all your teams and their members",
+};
 
 export default async function TeamsPage({
   searchParams,
