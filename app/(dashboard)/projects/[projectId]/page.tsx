@@ -1,7 +1,6 @@
 import { DashboardHeader } from "@/components/shared/dashboard-header";
 import { SearchBox } from "@/components/shared/search-box";
 import { fetchProjectWithTask } from "@/features/projects/actions/fetch-project-with-task.action";
-import { CreateProjectButton } from "@/features/projects/components/create-project-button";
 import {
   Table,
   TableBody,
@@ -13,12 +12,13 @@ import {
 } from "@/components/ui/table";
 import { cn, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { TASK_PRIORITY, TASK_STATUS } from "@/features/tasks/constant";
 import { TaskTableAction } from "@/features/tasks/components/task-table-action";
 import { TaskActionButtons } from "@/features/tasks/components/task-action-buttons";
 import { Circle } from "lucide-react";
 import { TablePagination } from "@/components/shared/table-pagination";
 import Link from "next/link";
+import { TaskPriorityBadge } from "@/features/tasks/components/task-priority-badge";
+import { TaskStatusBadge } from "@/features/tasks/components/task-status-badge";
 
 const DashboardProjectPage = async ({
   params,
@@ -135,42 +135,10 @@ const DashboardProjectPage = async ({
                   <TableCell>{formatDate(task.dueDate)}</TableCell>
 
                   <TableCell className="text-center">
-                    <Badge
-                      className={cn(
-                        "text-[10px] px-2 py-0.5",
-                        task.priority === "LOW"
-                          ? "bg-green-500 text-white"
-                          : task.priority === "MEDIUM"
-                          ? "bg-yellow-500 text-white"
-                          : "bg-red-500 text-white"
-                      )}
-                    >
-                      {
-                        TASK_PRIORITY.find(
-                          (priority: { value: string; label: string }) =>
-                            priority.value === task.priority
-                        )?.label
-                      }
-                    </Badge>
+                    <TaskPriorityBadge priority={task.priority} />
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge
-                      variant={
-                        task.status === "PENDING"
-                          ? "outline"
-                          : task.status === "IN_PROGRESS"
-                          ? "secondary"
-                          : "default"
-                      }
-                      className="text-[10px] px-2 py-0.5"
-                    >
-                      {
-                        TASK_STATUS.find(
-                          (status: { value: string; label: string }) =>
-                            status.value === task.status
-                        )?.label
-                      }
-                    </Badge>
+                    <TaskStatusBadge status={task.status} />
                   </TableCell>
                   <TableCell className="text-right w-[100px]">
                     <TaskTableAction id={task.id} />

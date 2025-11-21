@@ -15,6 +15,8 @@ import {
 import { fetchProjectSelectList } from "@/features/projects/actions/fetch-project-select-list.action";
 import { fetchTasksList } from "@/features/tasks/actions/fetch-tasks-list.action";
 import { CreateTaskButton } from "@/features/tasks/components/create-task-button";
+import { TaskPriorityBadge } from "@/features/tasks/components/task-priority-badge";
+import { TaskStatusBadge } from "@/features/tasks/components/task-status-badge";
 import { TaskTableAction } from "@/features/tasks/components/task-table-action";
 import { TASK_PRIORITY, TASK_STATUS } from "@/features/tasks/constant";
 import { fetchMemberSelectList } from "@/features/teams/actions/fetch-member-select-list.action";
@@ -146,43 +148,11 @@ const TasksPage = async ({ searchParams }: TasksPageProps) => {
 
                   <TableCell>{formatDate(task.dueDate)}</TableCell>
 
-                  <TableCell>
-                    <Badge
-                      variant={
-                        task.priority === "LOW"
-                          ? "default"
-                          : task.priority === "MEDIUM"
-                          ? "default"
-                          : "destructive"
-                      }
-                      className="text-[10px] px-2 py-0.5"
-                    >
-                      {
-                        TASK_PRIORITY.find(
-                          (priority: { value: string; label: string }) =>
-                            priority.value === task.priority
-                        )?.label
-                      }
-                    </Badge>
+                  <TableCell className="text-center">
+                    <TaskPriorityBadge priority={task.priority} />
                   </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        task.status === "PENDING"
-                          ? "outline"
-                          : task.status === "IN_PROGRESS"
-                          ? "secondary"
-                          : "default"
-                      }
-                      className="text-[10px] px-2 py-0.5"
-                    >
-                      {
-                        TASK_STATUS.find(
-                          (status: { value: string; label: string }) =>
-                            status.value === task.status
-                        )?.label
-                      }
-                    </Badge>
+                  <TableCell className="text-center">
+                    <TaskStatusBadge status={task.status} />
                   </TableCell>
                   <TableCell>
                     <TaskTableAction id={task.id} />

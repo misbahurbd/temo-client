@@ -273,7 +273,7 @@ const TaskDetailPage = async ({ params }: TaskDetailPageProps) => {
                         break;
                       case TaskActivityType.TASK_ASSIGNED:
                         iconBgClassName =
-                          "bg-green-500/10 text-green-600 dark:text-green-400";
+                          "bg-teal-500/10 text-teal-600 dark:text-teal-400";
                         Icon = UserPlus;
                         break;
                       case TaskActivityType.TASK_UNASSIGNED:
@@ -283,7 +283,7 @@ const TaskDetailPage = async ({ params }: TaskDetailPageProps) => {
                         break;
                       case TaskActivityType.TASK_REASSIGNED:
                         iconBgClassName =
-                          "bg-blue-500/10 text-blue-600 dark:text-blue-400";
+                          "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400";
                         Icon = ArrowRightLeft;
                         break;
                       default:
@@ -472,9 +472,9 @@ const TaskDetailPage = async ({ params }: TaskDetailPageProps) => {
                                   </AvatarFallback>
                                 </Avatar>
                                 <div className="flex flex-col">
-                                  <span className="text-sm text-foreground">
+                                  <span className="text-sm text-muted-foreground">
                                     Assigned to{" "}
-                                    <span className="font-medium">
+                                    <span className="font-medium text-foreground">
                                       {activity.assigneeTo?.name || ""}
                                     </span>
                                   </span>

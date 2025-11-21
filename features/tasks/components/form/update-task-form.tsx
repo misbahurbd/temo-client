@@ -184,6 +184,12 @@ export const UpdateTaskForm = () => {
     if (!member) {
       return;
     }
+    if (memberId === "UNASSIGNED") {
+      setMember(null);
+      setShowMemberCapacityModal(false);
+      form.setValue("assigneeId", memberId);
+      return;
+    }
     if (member.tasksCount > member.capacity) {
       setMember(member);
       setShowMemberCapacityModal(true);
@@ -219,7 +225,7 @@ export const UpdateTaskForm = () => {
             dueDate: response.data.dueDate
               ? new Date(response.data.dueDate)
               : undefined,
-            assigneeId: response.data.assigneeId,
+            assigneeId: response.data.assigneeId || "UNASSIGNED",
             projectId: response.data.projectId,
           });
         } else {
@@ -321,19 +327,29 @@ export const UpdateTaskForm = () => {
                             No assignees found
                           </SelectItem>
                         )}
-                        {assigneeList.map((assignee) => (
+                        {[
+                          {
+                            id: "UNASSIGNED",
+                            name: "Unassigned",
+                            tasksCount: 0,
+                            capacity: 0,
+                          },
+                          ...assigneeList,
+                        ].map((assignee) => (
                           <SelectItem key={assignee.id} value={assignee.id}>
                             {assignee.name}{" "}
-                            <Badge
-                              variant={
-                                assignee.tasksCount >= assignee.capacity
-                                  ? "destructive"
-                                  : "default"
-                              }
-                              className="text-[10px] px-1 py-0.5"
-                            >
-                              ({assignee.tasksCount}/{assignee.capacity})
-                            </Badge>
+                            {assignee.id !== "UNASSIGNED" && (
+                              <Badge
+                                variant={
+                                  assignee.tasksCount >= assignee.capacity
+                                    ? "destructive"
+                                    : "default"
+                                }
+                                className="text-[10px] px-1 py-0.5"
+                              >
+                                ({assignee.tasksCount}/{assignee.capacity})
+                              </Badge>
+                            )}
                           </SelectItem>
                         ))}
                       </SelectContent>

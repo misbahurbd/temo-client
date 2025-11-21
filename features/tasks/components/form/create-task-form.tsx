@@ -68,7 +68,10 @@ const formSchema = z.object({
   status: z.enum(TaskStatus),
   priority: z.enum(TaskPriority),
   dueDate: z.date().optional(),
-  assigneeId: z.string().optional(),
+  assigneeId: z
+    .string()
+    .nullable()
+    .transform((val) => (val ? (val === "UNASSIGNED" ? null : val) : null)),
   projectId: z.string().min(1, { message: "Project ID is required" }),
   serverError: z.string().optional(),
 });
@@ -93,7 +96,7 @@ export const CreateTaskForm = () => {
       status: TaskStatus.PENDING,
       priority: TaskPriority.LOW,
       dueDate: undefined,
-      assigneeId: "",
+      assigneeId: "UNASSIGNED",
       projectId: "",
       serverError: undefined,
     },
@@ -143,7 +146,7 @@ export const CreateTaskForm = () => {
 
   useEffect(() => {
     if (selectedProjectId) {
-      form.setValue("assigneeId", "");
+      form.setValue("assigneeId", "UNASSIGNED");
     }
   }, [selectedProjectId, form]);
 
@@ -194,6 +197,12 @@ export const CreateTaskForm = () => {
   const handleOnAssigneeChange = (memberId: string) => {
     const member = assigneeList.find((assignee) => assignee.id === memberId);
     if (!member) {
+      return;
+    }
+    if (memberId === "UNASSIGNED") {
+      setMember(null);
+      setShowMemberCapacityModal(false);
+      form.setValue("assigneeId", memberId);
       return;
     }
     if (member.tasksCount > member.capacity) {
@@ -271,6 +280,7 @@ export const CreateTaskForm = () => {
                   <FieldContent>
                     <Select
                       {...field}
+                      value={field.value || undefined}
                       onValueChange={(value) => handleOnAssigneeChange(value)}
                       disabled={!selectedProjectId}
                     >
@@ -286,19 +296,29 @@ export const CreateTaskForm = () => {
                             No assignees found
                           </SelectItem>
                         )}
-                        {assigneeList.map((assignee) => (
+                        {[
+                          {
+                            id: "UNASSIGNED",
+                            name: "Unassigned",
+                            tasksCount: 0,
+                            capacity: 0,
+                          },
+                          ...assigneeList,
+                        ].map((assignee) => (
                           <SelectItem key={assignee.id} value={assignee.id}>
                             {assignee.name}{" "}
-                            <Badge
-                              variant={
-                                assignee.tasksCount >= assignee.capacity
-                                  ? "destructive"
-                                  : "default"
-                              }
-                              className="text-[10px] px-1 py-0.5"
-                            >
-                              ({assignee.tasksCount}/{assignee.capacity})
-                            </Badge>
+                            {assignee.id !== "UNASSIGNED" && (
+                              <Badge
+                                variant={
+                                  assignee.tasksCount >= assignee.capacity
+                                    ? "destructive"
+                                    : "default"
+                                }
+                                className="text-[10px] px-1 py-0.5"
+                              >
+                                ({assignee.tasksCount}/{assignee.capacity})
+                              </Badge>
+                            )}
                           </SelectItem>
                         ))}
                       </SelectContent>

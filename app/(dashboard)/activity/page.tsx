@@ -1,7 +1,6 @@
 import { DashboardHeader } from "@/components/shared/dashboard-header";
 import { SearchBox } from "@/components/shared/search-box";
 import { TablePagination } from "@/components/shared/table-pagination";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { TableHead, TableHeader } from "@/components/ui/table";
 import {
@@ -11,16 +10,10 @@ import {
   TableFooter,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { format, formatDistanceToNow } from "date-fns";
 import {
   ArrowRight,
   Clock,
-  CheckCircle2,
   Circle,
   ArrowRightLeft,
   Plus,
@@ -131,7 +124,7 @@ export default async function ActivityPage({
                     break;
                   case TaskActivityType.TASK_ASSIGNED:
                     iconBgClassName =
-                      "bg-green-500/10 text-green-600 dark:text-green-400";
+                      "bg-teal-500/10 text-teal-600 dark:text-teal-400";
                     Icon = UserPlus;
                     break;
                   case TaskActivityType.TASK_UNASSIGNED:
@@ -141,7 +134,7 @@ export default async function ActivityPage({
                     break;
                   case TaskActivityType.TASK_REASSIGNED:
                     iconBgClassName =
-                      "bg-blue-500/10 text-blue-600 dark:text-blue-400";
+                      "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400";
                     Icon = ArrowRightLeft;
                     break;
                   default:
@@ -209,10 +202,10 @@ export default async function ActivityPage({
                       <div className="flex items-center gap-3">
                         {activityType === TaskActivityType.TASK_CREATED && (
                           <div className="flex items-center gap-2">
-                            {activity.assigneeTo.name && (
+                            {activity.assigneeTo?.name && (
                               <Avatar className="size-8 border-2 border-background">
                                 <AvatarFallback className="bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs">
-                                  {activity.assigneeTo.name
+                                  {activity.assigneeTo?.name
                                     .split(" ")
                                     .map((n) => n[0])
                                     .join("")
@@ -224,7 +217,7 @@ export default async function ActivityPage({
                             <span className="text-sm text-muted-foreground">
                               Created and assigned to{" "}
                               <span className="font-medium text-foreground">
-                                {activity.assigneeTo.name || "Unassigned"}
+                                {activity.assigneeTo?.name || "Unassigned"}
                               </span>
                             </span>
                           </div>
@@ -325,9 +318,9 @@ export default async function ActivityPage({
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex flex-col">
-                              <span className="text-sm text-foreground">
+                              <span className="text-sm text-muted-foreground">
                                 Assigned to{" "}
-                                <span className="font-medium">
+                                <span className="font-medium text-foreground">
                                   {activity.assigneeTo?.name || ""}
                                 </span>
                               </span>

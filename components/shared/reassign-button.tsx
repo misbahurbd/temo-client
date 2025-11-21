@@ -34,8 +34,8 @@ export const ReassignButton = ({
       <span className="relative z-10 flex items-center gap-2">
         <Sparkles
           className={cn(
-            "h-4 w-4 transition-all duration-300",
-            "group-hover:rotate-180 group-hover:scale-110",
+            "h-4 w-4 transition-all delay-75 duration-500",
+            "group-hover:rotate-180 delay-0 group-hover:scale-110",
             !isDisabled && "animate-pulse",
             isLoading && "animate-spin"
           )}
