@@ -7,7 +7,6 @@ import { cookies } from "next/headers";
 import { CreateProjectModal } from "@/features/projects/modals/create-project-modal";
 import { CreateTaskModal } from "@/features/tasks/modals/create-task-modal";
 import { UpdateTaskModal } from "@/features/tasks/modals/update-task-modal";
-import { Suspense } from "react";
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   const cookieStore = await cookies();
@@ -16,9 +15,8 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider className="gap-0" defaultOpen={defaultOpen}>
       <AppSidebar />
-      <Suspense fallback={<p>Loading...</p>}>
-        <main className="p-4 flex-1">{children}</main>
-      </Suspense>
+
+      <main className="p-4 flex-1">{children}</main>
 
       {/* All models */}
       <CreateTeamModal />

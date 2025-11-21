@@ -102,3 +102,23 @@
 .cta-animation {
   animation: spinner-animation 3s ease-in-out infinite;
 }
+
+@keyframes loading-shimmer {
+  0% {
+    transform: translateX(-100%);
+    width: 30%;
+  }
+  50% {
+    transform: translateX(0%);
+    width: 70%;
+  }
+  100% {
+    transform: translateX(100%);
+    width: 30%;
+  }
+}
+
+.loading-progress-bar {
+  animation: loading-shimmer 2s ease-in-out infinite;
+  width: 60%;
+}
